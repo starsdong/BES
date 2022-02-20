@@ -1,6 +1,7 @@
 #include "TLine.h"
 #include "TLatex.h"
 #include "TGraphErrors.h"
+#include "TBox.h"
 #include "iostream"
 
 void drawHistBox(double x1=0., double x2=1., double y1=0., double y2=1., int lineWidth=3333, int lineStyle=1, int lineColor=1)
@@ -101,6 +102,14 @@ void drawSysError(TGraphErrors *gr, double xoffset=0.05, double yoffset=0.03, in
     lb2->SetLineColor(lineColor);
     lb2->Draw("same");
   }
+}
+
+void drawColorBox(double x1, double y1, double x2, double y2, int fillColor=5, float alpha=0.5)
+{
+  TBox *box = new TBox(x1,y1,x2,y2);
+  box->SetFillColorAlpha(fillColor, alpha);
+  box->SetLineColorAlpha(fillColor, alpha);
+  box->Draw("same");
 }
 
 void setGraphMarker(TGraphErrors *gr, int markerStyle=20, int markerColor=1, double markerSize=1.5)

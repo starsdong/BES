@@ -9,9 +9,12 @@ void s3(){
   TF1 *fMuB = new TF1("MuB","1307.5/(1+0.288*x)",2.,1e5);
   
 
-  const Int_t NM = 5;
-  const Char_t *FileName[NM] = {"hybridurqmd","stringmeltingampt","defaultampt","coalescencedcm","thermalmodelgsi"};
-  const Char_t *LegendName[NM] = {"Hybrid UrQMD","AMPT (string melt.)","AMPT (default)","Coal. (DCM)","Thermal - GSI"};
+  // const Int_t NM = 5;
+  // const Char_t *FileName[NM] = {"hybridurqmd","stringmeltingampt","defaultampt","coalescencedcm","thermalmodelgsi"};
+  // const Char_t *LegendName[NM] = {"Hybrid UrQMD","AMPT (string melt.)","AMPT (default)","Coal. (DCM)","Thermal - GSI"};
+  const Int_t NM = 4;
+  const Char_t *FileName[NM] = {"hybridurqmd","stringmeltingampt","defaultampt","thermalmodelgsi"};
+  const Char_t *LegendName[NM] = {"Hybrid UrQMD","AMPT (string melt.)","AMPT (default)","Thermal - GSI"};
   TGraph *gr_M[NM];
   TGraph *gr_M_muB[NM];
   for(int i=0;i<NM;i++) {
@@ -61,8 +64,13 @@ void s3(){
   h0->SetMinimum(y1);
   h0->Draw();
 
-  const Int_t lineColor[NM] = {kBlack,kRed,kGreen+2,kBlue,kBlack};
-  const Int_t lineStyle[NM] = {1,2,3,4,2};
+  drawColorBox(3.0, y1, 19.6, y2, kGreen-4, 0.3);
+  drawColorBox(2.0, y1, 5.0, y2, 5, 0.5);
+  
+  // const Int_t lineColor[NM] = {kBlack,kRed,kGreen+2,kBlue,kBlack};
+  // const Int_t lineStyle[NM] = {1,2,3,4,2};
+  const Int_t lineColor[NM] = {kBlack,kRed,kGreen+2,kBlack};
+  const Int_t lineStyle[NM] = {1,2,3,2};
   for(int i=0;i<NM;i++) {
     gr_M[i]->SetLineColor(lineColor[i]);
     gr_M[i]->SetLineStyle(lineStyle[i]);
@@ -85,14 +93,14 @@ void s3(){
     gr_D[i]->Draw("p");
   }
   
-  TLegend *leg = new TLegend(0.62, 0.2, 0.89, 0.42);
+  TLegend *leg = new TLegend(0.62, 0.2, 0.89, 0.4);
   leg->SetLineColor(10);
   leg->SetTextSize(0.035);
   for(int i=0;i<NM;i++) 
     leg->AddEntry(gr_M[i], LegendName[i], "l");
   leg->Draw();
 
-  leg = new TLegend(0.76, 0.76, 0.96, 0.94);
+  leg = new TLegend(0.76, 0.74, 0.96, 0.94);
   leg->SetLineColor(10);
   leg->SetTextSize(0.035);
   leg->AddEntry(gr_D[2], "  STAR", "pl");
@@ -100,7 +108,7 @@ void s3(){
   leg->AddEntry(gr_D[0], "  HypHI", "pl");
   leg->AddEntry(gr_D[1], "  E864", "pl");
   leg->Draw();
-  
+
   
   drawHistBox(x1,x2,y1,y2);
   drawText(8.2, -0.07, "10");
@@ -129,6 +137,9 @@ void s3(){
   h0->SetMinimum(y1);
   h0->Draw();
 
+  drawColorBox(fMuB->Eval(19.6), y1, fMuB->Eval(3.0), y2, kGreen-4, 0.3);
+  drawColorBox(fMuB->Eval(5.0), y1, fMuB->Eval(2.0), y2, 5, 0.5);
+
   for(int i=0;i<NM;i++) {
     gr_M_muB[i]->SetLineColor(lineColor[i]);
     gr_M_muB[i]->SetLineStyle(lineStyle[i]);
@@ -148,15 +159,18 @@ void s3(){
     gr_D_muB[i]->Draw("p");
   }
   
-  leg = new TLegend(0.7, 0.72, 0.95, 0.94);
+  leg = new TLegend(0.7, 0.74, 0.95, 0.94);
+  leg->SetFillStyle(0);
+  leg->SetBorderSize(0.001);
   leg->SetLineColor(10);
   leg->SetTextSize(0.035);
   for(int i=0;i<NM;i++) 
     leg->AddEntry(gr_M_muB[i], LegendName[i], "l");
   leg->Draw();
 
-  leg = new TLegend(0.82, 0.52, 0.96, 0.7);
-  leg->SetLineColor(10);
+  leg = new TLegend(0.55, 0.74, 0.7, 0.94);
+  leg->SetFillStyle(0);
+  leg->SetBorderSize(0.001);
   leg->SetTextSize(0.035);
   leg->AddEntry(gr_D[2], "  STAR", "pl");
   leg->AddEntry(gr_D[4], "  ALICE", "pl");
