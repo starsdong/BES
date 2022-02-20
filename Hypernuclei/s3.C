@@ -64,7 +64,7 @@ void s3(){
   h0->SetMinimum(y1);
   h0->Draw();
 
-  drawColorBox(3.0, y1, 19.6, y2, kGreen-4, 0.3);
+  //  drawColorBox(3.0, y1, 19.6, y2, kGreen-4, 0.3);
   drawColorBox(2.0, y1, 5.0, y2, 5, 0.5);
   
   // const Int_t lineColor[NM] = {kBlack,kRed,kGreen+2,kBlue,kBlack};
@@ -137,7 +137,7 @@ void s3(){
   h0->SetMinimum(y1);
   h0->Draw();
 
-  drawColorBox(fMuB->Eval(19.6), y1, fMuB->Eval(3.0), y2, kGreen-4, 0.3);
+  //  drawColorBox(fMuB->Eval(19.6), y1, fMuB->Eval(3.0), y2, kGreen-4, 0.3);
   drawColorBox(fMuB->Eval(5.0), y1, fMuB->Eval(2.0), y2, 5, 0.5);
 
   for(int i=0;i<NM;i++) {
