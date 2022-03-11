@@ -62,6 +62,7 @@ void drawSysError(TGraphErrors *gr, double xoffset=0.05, double yoffset=0.03, in
     double x0 = gr->GetX()[i];
     double y0 = gr->GetY()[i];
     double ye = gr->GetEY()[i];
+    if(fabs(ye/y0)<1e-4) continue;
     double x1 = x0-xoffset;
     double x2 = x0+xoffset;
     double y1 = y0-ye;
@@ -156,4 +157,26 @@ void drawSysBox(TGraphAsymmErrors *gr, double xoffset=0.05, int boxColor=1, bool
     box->Draw("same");
   }
 
+}
+
+void drawColorBox(double x1, double y1, double x2, double y2, int fillColor=5, float alpha=0.5)
+{
+  TBox *box = new TBox(x1,y1,x2,y2);
+  box->SetFillColorAlpha(fillColor, alpha);
+  box->SetLineColorAlpha(fillColor, alpha);
+  box->Draw("same");
+}
+
+void setGraphMarker(TGraphErrors *gr, int markerStyle=20, int markerColor=1, double markerSize=1.5)
+{
+  gr->SetMarkerStyle(markerStyle);
+  gr->SetMarkerColor(markerColor);
+  gr->SetMarkerSize(markerSize);
+}
+
+void setGraphLine(TGraph *gr, int lineStyle=1, int lineColor=1, int lineWidth=2)
+{
+  gr->SetLineStyle(lineStyle);
+  gr->SetLineColor(lineColor);
+  gr->SetLineWidth(lineWidth);
 }
