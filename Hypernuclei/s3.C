@@ -46,6 +46,13 @@ void s3(){
     gr_D_muB_sys[i] = new TGraphErrors(gr_D_sys[i]->GetN(), muB, gr_D_sys[i]->GetY(), 0, gr_D_sys[i]->GetEY());
   }
 
+  const Int_t NEL = 4;
+  const Double_t EL[NEL] = {3.0, 7.7, 19.6, 200.};
+  const Char_t* TextL[NEL] = {"3.0", "7.7", "19.6", "200"};
+  Double_t MuBL[NEL];
+  for(int i=0;i<NEL;i++) {
+      MuBL[i] = fMuB->Eval(EL[i]);
+  }
   
   TCanvas *c1 = new TCanvas("c1","c1",800,600);
   c1->cd()->SetLogx();
@@ -53,7 +60,7 @@ void s3(){
   double x1 = 1.5;
   double x2 = 6e3;
   double y1 = 0;
-  double y2 = 1.2;
+  double y2 = 1.19;
   TH1D *h0 = new TH1D("h0","",1,x1,x2);
   h0->GetXaxis()->CenterTitle();
   h0->SetXTitle("Collision Energy #sqrt{s_{NN}} (GeV)");
@@ -121,16 +128,19 @@ void s3(){
 
   
   TCanvas *c2 = new TCanvas("c2","c2",800,0,800,600);
+  c2->SetTopMargin(0.07);
+  c2->SetTickx(0);
   c2->cd();
 
   x1 = -50;
-  x2 = 990;
+  x2 = 850;
   y1 = 0;
-  y2 = 1.2;
+  y2 = 1.19;
   h0 = new TH1D("h0","",1,x1,x2);
   h0->GetXaxis()->CenterTitle();
-  h0->SetXTitle("#mu_{B} (MeV)");
-  h0->GetXaxis()->SetLabelOffset(0.005);
+  h0->SetXTitle("Baryon Chemical Potential #mu_{B} (MeV)");
+  h0->GetXaxis()->SetLabelOffset(0.008);
+  h0->GetXaxis()->SetTitleOffset(1.1);
   h0->SetYTitle("S_{3} #equiv ({}^{3}_{#Lambda}H/^{3}He)/(#Lambda/p)");
   h0->GetYaxis()->SetTitleOffset(1.1);
   h0->SetMaximum(y2);
@@ -139,6 +149,16 @@ void s3(){
 
   //  drawColorBox(fMuB->Eval(19.6), y1, fMuB->Eval(3.0), y2, kGreen-4, 0.3);
   drawColorBox(fMuB->Eval(5.0), y1, fMuB->Eval(2.0), y2, 5, 0.5);
+
+  TLine *ll[NEL];
+  for(int i=0;i<NEL;i++) {
+    ll[i] = new TLine(MuBL[i], y2*0.98, MuBL[i], y2);
+    ll[i]->SetLineWidth(2);
+    ll[i]->Draw("same");
+    drawText(MuBL[i]-20, y2*1.02, TextL[i], 42, 0.04);
+  }
+  drawText(x1-50, y2*1.03, "#sqrt{s_{NN}}", 42, 0.045);
+  
 
   for(int i=0;i<NM;i++) {
     gr_M_muB[i]->SetLineColor(lineColor[i]);
@@ -159,7 +179,7 @@ void s3(){
     gr_D_muB[i]->Draw("p");
   }
   
-  leg = new TLegend(0.7, 0.74, 0.95, 0.94);
+  leg = new TLegend(0.7, 0.7, 0.95, 0.9);
   leg->SetFillStyle(0);
   leg->SetBorderSize(0.001);
   leg->SetLineColor(10);
@@ -168,7 +188,7 @@ void s3(){
     leg->AddEntry(gr_M_muB[i], LegendName[i], "l");
   leg->Draw();
 
-  leg = new TLegend(0.55, 0.74, 0.7, 0.94);
+  leg = new TLegend(0.55, 0.7, 0.7, 0.9);
   leg->SetFillStyle(0);
   leg->SetBorderSize(0.001);
   leg->SetTextSize(0.035);

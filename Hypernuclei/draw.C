@@ -1,6 +1,7 @@
 #include "TLine.h"
 #include "TLatex.h"
 #include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
 #include "TBox.h"
 #include "iostream"
 
@@ -61,6 +62,7 @@ void drawSysError(TGraphErrors *gr, double xoffset=0.05, double yoffset=0.03, in
     double x0 = gr->GetX()[i];
     double y0 = gr->GetY()[i];
     double ye = gr->GetEY()[i];
+    if(fabs(ye/y0)<1e-4) continue;
     double x1 = x0-xoffset;
     double x2 = x0+xoffset;
     double y1 = y0-ye;
@@ -102,6 +104,59 @@ void drawSysError(TGraphErrors *gr, double xoffset=0.05, double yoffset=0.03, in
     lb2->SetLineColor(lineColor);
     lb2->Draw("same");
   }
+}
+
+void drawSysBox(TGraphErrors *gr, double xoffset=0.05, int boxColor=1, bool logx=0)
+{
+  if(!gr) {
+    std::cout << "No TGraphErrors, return!" << std::endl;
+    return;
+  }
+  
+  for(int i=0;i<gr->GetN();i++) {
+    double x0 = gr->GetX()[i];
+    double y0 = gr->GetY()[i];
+    double ye = gr->GetEY()[i];
+    double x1 = x0-xoffset;
+    double x2 = x0+xoffset;
+    if(logx) {
+      x1 = x0*(1-xoffset);
+      x2 = x0*(1+xoffset);
+    }
+
+    TBox *box = new TBox(x1,y0-ye,x2,y0+ye);
+    box->SetFillColor(boxColor);
+    box->SetLineColor(boxColor);
+    box->Draw("same");
+  }
+
+}
+
+void drawSysBox(TGraphAsymmErrors *gr, double xoffset=0.05, int boxColor=1, bool logx=0)
+{
+  if(!gr) {
+    std::cout << "No TGraphErrors, return!" << std::endl;
+    return;
+  }
+  
+  for(int i=0;i<gr->GetN();i++) {
+    double x0 = gr->GetX()[i];
+    double y0 = gr->GetY()[i];
+    double yel = gr->GetEYlow()[i];
+    double yeh = gr->GetEYhigh()[i];
+    double x1 = x0-xoffset;
+    double x2 = x0+xoffset;
+    if(logx) {
+      x1 = x0*(1-xoffset);
+      x2 = x0*(1+xoffset);
+    }
+
+    TBox *box = new TBox(x1,y0-yel,x2,y0+yeh);
+    box->SetFillColor(boxColor);
+    box->SetLineColor(boxColor);
+    box->Draw("same");
+  }
+
 }
 
 void drawColorBox(double x1, double y1, double x2, double y2, int fillColor=5, float alpha=0.5)
