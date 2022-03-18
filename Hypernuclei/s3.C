@@ -72,7 +72,7 @@ void s3(){
   h0->Draw();
 
   //  drawColorBox(3.0, y1, 19.6, y2, kGreen-4, 0.3);
-  drawColorBox(2.0, y1, 5.0, y2, 5, 0.5);
+  //  drawColorBox(2.0, y1, 5.0, y2, 5, 0.5);
   
   // const Int_t lineColor[NM] = {kBlack,kRed,kGreen+2,kBlue,kBlack};
   // const Int_t lineStyle[NM] = {1,2,3,4,2};
@@ -154,10 +154,11 @@ void s3(){
   for(int i=0;i<NEL;i++) {
     ll[i] = new TLine(MuBL[i], y2*0.98, MuBL[i], y2);
     ll[i]->SetLineWidth(2);
-    ll[i]->Draw("same");
+    //    ll[i]->Draw("same");
     drawText(MuBL[i]-20, y2*1.02, TextL[i], 42, 0.04);
   }
   drawText(x1-50, y2*1.03, "#sqrt{s_{NN}}", 42, 0.045);
+  drawText(x2-50, y2*1.02, "GeV", 42, 0.04);
   
 
   for(int i=0;i<NM;i++) {

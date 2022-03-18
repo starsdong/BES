@@ -45,8 +45,8 @@ void makeBES_Pi_PT()
   }
 
   const Int_t NEL = 4;
-  const Double_t EL[NEL] = {2.4, 7.7, 19.6, 200.};
-  const Char_t* TextL[NEL] = {"2.4", "7.7", "19.6", "200"};
+  const Double_t EL[NEL] = {3.0, 7.7, 19.6, 200.};
+  const Char_t* TextL[NEL] = {"3.0", "7.7", "19.6", "200"};
   Double_t MuBL[NEL];
   for(int i=0;i<NEL;i++) {
       MuBL[i] = fMuB->Eval(EL[i]);
@@ -139,10 +139,11 @@ void makeBES_Pi_PT()
   for(int i=0;i<NEL;i++) {
     ll[i] = new TLine(MuBL[i], y2*0.98, MuBL[i], y2);
     ll[i]->SetLineWidth(2);
-    ll[i]->Draw("same");
+    //    ll[i]->Draw("same");
     drawText(MuBL[i]-20, y2*1.02, TextL[i], 42, 0.04);
   }
   drawText(x1-50, y2*1.03, "#sqrt{s_{NN}}", 42, 0.045);
+  drawText(x2-50, y2*1.02, " GeV", 42, 0.04);
   
 
   TGraph *gr_muB_M[NM];
