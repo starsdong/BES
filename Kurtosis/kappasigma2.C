@@ -32,11 +32,17 @@ void kappasigma2(){
   Double_t C4C2_se[NE] = {0.822, 0.414, .267, 0.254, 0.156, 0.143, 0.136, 0.139, 0.122, 0.139};
   Double_t C4C2_e_tot[NE];
 
+  // from BES-I PRC long paper
+  /*
   const Int_t NE_ref = 5;
   const Double_t E_ref[NE_ref] = {3.0, 8.8, 17.27, 27.0, 62.4};  // 3.0 - UrQMD, others - HRG - CE
   const Double_t C4C2_ref[NE_ref] = {-0.774, 0.43147, 0.65726, 0.73934, 0.81176};
   TGraph *gr_ref = new TGraph(NE_ref, E_ref, C4C2_ref);
+  */
+  // from VV, BC+EV: 2107.00163
+  TGraph *gr_ref = new TGraph("ksigma2_BCEV.txt","%lg %lg");
 
+    
   for(int i=0;i<NE;i++) {
     C4C2[i] -= gr_ref->Eval(E[i]);
     C4C2_e_tot[i] = sqrt(C4C2_e[i]*C4C2_e[i]+C4C2_se[i]*C4C2_se[i]);
@@ -78,7 +84,7 @@ void kappasigma2(){
 
   double x1 = 1.9;
   double x2 = 4e2;
-  double y1 = -1.3;
+  double y1 = -2.3;
   double y2 = 2.9;
   TH1D *h0 = new TH1D("h0","",1,x1,x2);
   h0->GetXaxis()->CenterTitle();
@@ -96,7 +102,7 @@ void kappasigma2(){
   gr_p->SetFillColor(kGreen-3);
   gr_p->SetLineColor(kGreen-3);
   gr_p->SetLineWidth(15);
-  //  gr_p->Draw("e3");
+  gr_p->Draw("e3");
   drawLine(x1,0,x2,0,2,9,1);
 
   TF1 *fun = new TF1("fun",xgx,x1,x2,5);
@@ -119,21 +125,22 @@ void kappasigma2(){
   
   
   drawHistBox(x1,x2,y1,y2);
-  drawText(2.85, y1-0.25, "3");
-  drawText(8.5, y1-0.25, "10");
-  drawText(26.5, y1-0.25, "30");
-  drawText(85, y1-0.25, "100");
-  drawText(2.6, -0.8, "-0.5<y<0",42,0.035,90);
+  drawText(2.85, y1-0.35, "3");
+  drawText(8.5, y1-0.35, "10");
+  drawText(26.5, y1-0.35, "30");
+  drawText(85, y1-0.35, "100");
+  drawText(2.6, -1.8, "-0.5<y<0",42,0.035,90);
 
-  drawText(23, y2*0.85, "Central Au+Au Collisions",22,0.055);
-  drawText(42, y2*0.72, "0.4<p_{T}<2.0 GeV/c, |y|<0.5",42,0.04);
-  drawText(60, y2*0.6, " ref: HRG CE/UrQMD",12,0.04);
-  TLegend *leg = new TLegend(0.67, 0.66, 0.9, 0.74);
+  drawText(23, y1+(y2-y1)*0.9, "Central Au+Au Collisions",22,0.055);
+  drawText(42, y1+(y2-y1)*0.82, "0.4<p_{T}<2.0 GeV/c, |y|<0.5",42,0.04);
+  drawText(95, y1+(y2-y1)*0.74, " ref: HRG + EV",12,0.04);
+  TLegend *leg = new TLegend(0.67, 0.22, 0.9, 0.3);
   leg->SetLineColor(10);
   leg->SetTextSize(0.04);
   leg->SetTextFont(12);
+  leg->SetTextSize(0.045);
   leg->AddEntry(gr_p,"  BES-II proj.","l");
-  //  leg->Draw();
+  leg->Draw();
   
   c1->Update();
   c1->SaveAs("kappasigma2VsE.pdf");
@@ -178,14 +185,15 @@ void kappasigma2(){
   
   
   drawHistBox(x1,x2,y1,y2);
-  drawText(740, -0.8, "-0.5<y<0",42,0.035,90);
+  drawText(740, -1.8, "-0.5<y<0",42,0.035,90);
 
-  drawText(0, y2*0.85, "Central Au+Au Collisions",22,0.055);
-  drawText(0, y2*0.72, "0.4<p_{T}<2.0 GeV/c, |y|<0.5",42,0.04);
-  drawText(0, y2*0.6, " ref: HRG CE/UrQMD",12,0.04);
-  leg = new TLegend(0.18, 0.66, 0.4, 0.74);
+  drawText(-10, y1+(y2-y1)*0.9, "Central Au+Au Collisions",22,0.05);
+  drawText(-10, y1+(y2-y1)*0.82, "0.4<p_{T}<2.0 GeV/c, |y|<0.5",42,0.04);
+  drawText(-10, y1+(y2-y1)*0.74, " ref: HRG + EV",12,0.04);
+
+  leg = new TLegend(0.18, 0.22, 0.4, 0.3);
   leg->SetLineColor(10);
-  leg->SetTextSize(0.04);
+  leg->SetTextSize(0.045);
   leg->SetTextFont(12);
   leg->AddEntry(gr_p_muB,"  BES-II proj.","l");
   leg->Draw();
