@@ -1,0 +1,61 @@
+Aug 30, 2021
+Volodymyr Vovchenko <vovchenko@lbl.gov>
+
+Au-Au 3 GeV, results for cumulants and correlation functions
+
+Analytic calculation using the method from V. Vovchenko, V. Koch and C. Shen, arXiv:2107.00163 [hep-ph]
+Baryon conservation effect via SAM-2.0: V.~Vovchenko, arXiv:2106.13775 [hep-ph]
+Calculations also incorporate the small effect of Fermi-Dirac statistics on the grand-canonical cumulants
+
+
+Freeze-out hypersurface from the blast-wave model:
+T = 90 MeV, <\beta_T> = 0.45, n = 1, \eta_max = 0.5, R = 6.5 fm
+
+muB ~ 750 MeV for ideal gas, adjusted ~780 MeV for the excluded volume HRG (to match p/pi ratio)
+
+The acceptance in pT is 0.4 < pT < 2.0 GeV/c
+
+
+Results:
+
+baryon conservation + excluded volume:
+
+Correlation functions
+acc         C1        C2/C1       C3/C1       C4/C1        
+-0.5<y<0    35.       -0.1345121  0.04244039  -0.02197249  
+-0.5<y<0.5  70.       -0.219512   0.1022518   -0.07445097  
+
+
+Cumulants
+acc         K1        K2/K1-1     K3/K1-1     K4/K1-1     
+-0.5<y<0    35.       -0.1345121  -0.3610961  -0.7089152  
+-0.5<y<0.5  70.       -0.219512   -0.5562843  -0.9975246  
+
+
+baryon conservation only:
+
+Correlation functions
+acc         C1        C2/C1       C3/C1       C4/C1         
+-0.5<y<0    35.       -0.1039423  0.02222549  -0.007315622  
+-0.5<y<0.5  70.       -0.2033858  0.08337422  -0.05164862   
+
+
+Cumulants
+acc         K1        K2/K1-1     K3/K1-1     K4/K1-1     
+-0.5<y<0    35.       -0.1039423  -0.2896014  -0.6015587  
+-0.5<y<0.5  70.       -0.2033858  -0.5267832  -0.9751039  
+
+
+excluded volume only:
+
+Correlation functions
+acc         C1        C2/C1        C3/C1        C4/C1          
+-0.5<y<0    35.       -0.0399661   0.004022997  -0.0006800355  
+-0.5<y<0.5  70.       -0.06076917  0.008658692  -0.002021184  
+
+Cumulants
+acc         K1        K2/K1-1      K3/K1-1     K4/K1-1     
+-0.5<y<0    35.       -0.0399661   -0.1158753  -0.2563048  
+-0.5<y<0.5  70.       -0.06076917  -0.1736488  -0.3754532  
+
+
