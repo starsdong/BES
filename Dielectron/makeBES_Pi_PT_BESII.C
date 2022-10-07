@@ -1,7 +1,7 @@
 #include "draw.C+"
 #include "style.C+"
 
-void makeBES_Pi_PT()
+void makeBES_Pi_PT_BESII()
 {
   style();
 
@@ -44,6 +44,31 @@ void makeBES_Pi_PT()
     }
   }
 
+  const Int_t lineColor[NM] = { 1, 1};
+  const Int_t lineStyle[NM] = { 1, 2};
+  TGraph *gr_M[NM];
+  for(int i=0;i<NM;i++) {
+    gr_M[i] = new TGraph(NPM[i], EM[i], YM[i]);
+    gr_M[i]->SetName(NameM[i]);
+    gr_M[i]->SetLineWidth(2);
+    gr_M[i]->SetLineColor(lineColor[i]);
+    gr_M[i]->SetLineStyle(lineStyle[i]);
+  }
+
+  const Int_t NP = 5;
+  const Double_t EP[NP] = {7.7, 9.2, 11.5, 14.6, 19.6};
+  const Double_t re_err = 0.084;
+  Double_t YP[NP], YeP[NP];
+  for(int i=0;i<NP;i++) {
+    YP[i] = gr_M[0]->Eval(EP[i]);
+    YeP[i] = gr_M[0]->Eval(EP[i])*re_err;
+  }
+  TGraphErrors *gr_p = new TGraphErrors(NP, EP, YP, 0, YeP);
+  gr_p->SetFillColor(kGreen-3);
+  gr_p->SetLineColor(kGreen-3);
+  gr_p->SetLineWidth(15);
+
+  
   const Int_t NEL = 4;
   const Double_t EL[NEL] = {3.0, 7.7, 19.6, 200.};
   const Char_t* TextL[NEL] = {"3.0", "7.7", "19.6", "200"};
@@ -72,17 +97,9 @@ void makeBES_Pi_PT()
   h0->SetMinimum(y1);
   h0->Draw();
 
+  gr_p->Draw("e3");
 
-  TGraph *gr_M[NM];
-  const Int_t lineColor[NM] = { 1, 1};
-  const Int_t lineStyle[NM] = { 1, 2};
-  
   for(int i=0;i<NM;i++) {
-    gr_M[i] = new TGraph(NPM[i], EM[i], YM[i]);
-    gr_M[i]->SetName(NameM[i]);
-    gr_M[i]->SetLineWidth(2);
-    gr_M[i]->SetLineColor(lineColor[i]);
-    gr_M[i]->SetLineStyle(lineStyle[i]);
     gr_M[i]->Draw("L");
   }
 
@@ -103,15 +120,17 @@ void makeBES_Pi_PT()
 
   drawText(40, 1.2, "0.3<M_{ll}<0.7 GeV/c^{2}",12,0.045);
 
-  TLegend *leg = new TLegend(0.2, 0.2, 0.52, 0.36);
-  leg->SetLineColor(10);
+  TLegend *leg = new TLegend(0.2, 0.2, 0.52, 0.41);
+  leg->SetLineColor(10);  
+  leg->SetTextSize(0.04);
+  leg->AddEntry(gr_p,"  BES-II proj.","l");
   leg->AddEntry(gr_M[1], " 1st-order PT", "l");
   leg->AddEntry(gr_M[0], " no 1st-order PT", "l");
   leg->Draw();
 
   c1->Update();
-  c1->SaveAs("DielectronPiVsE_Rapp.pdf");
-  c1->SaveAs("DielectronPiVsE_Rapp.png");
+  c1->SaveAs("DielectronPiVsE_Rapp_BESII.pdf");
+  c1->SaveAs("DielectronPiVsE_Rapp_BESII.png");
 
   
   TCanvas *c2 = new TCanvas("c2","c2",800,0,800,600);
@@ -137,7 +156,7 @@ void makeBES_Pi_PT()
 
   cout << " Mu_B region " << fMuB->Eval(2.9) << " - " << fMuB->Eval(4.9) << endl;
   //  drawColorBox(fMuB->Eval(4.9), y1, fMuB->Eval(2.9), y2, 5, 0.5);
-  drawColorBox(540, y1, 800, y2, 5, 0.5);
+  //  drawColorBox(540, y1, 800, y2, 5, 0.5);
 
   TLine *ll[NEL];
   for(int i=0;i<NEL;i++) {
@@ -180,7 +199,7 @@ void makeBES_Pi_PT()
   drawHistBox(x1,x2,y1,y2);
 
   c2->Update();
-  c2->SaveAs("DielectronPiVsMuB_Rapp.pdf");
-  c2->SaveAs("DielectronPiVsMuB_Rapp.png");
+  c2->SaveAs("DielectronPiVsMuB_Rapp_BESII.pdf");
+  c2->SaveAs("DielectronPiVsMuB_Rapp_BESII.png");
 
 }
