@@ -1,7 +1,8 @@
 #include "draw.C+"
 #include "style.C+"
 
-void excess_v1()
+void excess_v1(const Int_t conf = 1)
+// conf:  1 - w/ models, 0 - w/o models
 {
   style();
   gROOT->LoadMacro("~/work/work/C/kinematic.C");
@@ -89,6 +90,26 @@ void excess_v1()
   TGraphErrors *gr_bes2_sys = new TGraphErrors(NP2, bes2_energy_d, bes2val_excess_p, 0, bes2syserr_excess_p);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Models
+  const Int_t NM = 2;
+  const Int_t NEMax = 10;
+  TFile *fin = new TFile("JAMProtonV1TwoComp.root");
+  const Char_t *GraphName[NM] = {"gExcessSlope_casc_c1","gExcessSlope_mfrmf_c1"};
+  const Char_t *LabelName[NM] = {"JAM Cascade","JAM Mean Field"};
+  TGraph *gr_m[NM], *gr_m_tmp[NM];
+  Double_t model_energy[NM][NEMax], model_v1[NM][NEMax];
+  for(int i=0;i<NM;i++) {
+    gr_m_tmp[i] = (TGraph *)fin->Get(GraphName[i]);
+    for(int j=0;j<gr_m_tmp[i]->GetN();j++) {
+      model_energy[i][j] = gr_m_tmp[i]->GetX()[j];
+      double y_m = rapidity(model_energy[i][j]);
+      model_v1[i][j] = gr_m_tmp[i]->GetY()[j] * y_m;
+    }
+    gr_m[i] = new TGraph(gr_m_tmp[i]->GetN(), model_energy[i], model_v1[i]);
+    gr_m[i]->Print();
+  }
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
 
   TCanvas *c1 = new TCanvas("c1","c1",800,600);
   c1->cd()->SetLogx();
@@ -97,6 +118,7 @@ void excess_v1()
   double x2 = 4e2;
   double y1 = 0.05;
   double y2 = 0.2;
+  if(conf) y2 = 0.6;
   TH1D *h0 = new TH1D("h0","",1,x1,x2);
   h0->GetXaxis()->CenterTitle();
   h0->SetXTitle("Collision Energy #sqrt{s_{NN}} (GeV)");
@@ -108,6 +130,13 @@ void excess_v1()
   h0->Draw("c");
 
   drawLine(x1*1.1, 0.078, x2*0.9, 0.078, 2, 8, 1);
+
+  const Int_t m_lineColor[NM] = {2, 4};
+  const Int_t m_lineStyle[NM] = {2, 3};
+  for(int i=0;i<NM;i++) {
+    setGraphLine(gr_m[i], m_lineStyle[i], m_lineColor[i]);
+    if(conf) gr_m[i]->Draw("l");
+  }
 
   setGraphMarker(gr_bes1_sys, 24, 1, 1.5);
   setGraphLine(gr_bes1_sys, 1, 1, 2);
@@ -141,8 +170,17 @@ void excess_v1()
   leg->AddEntry(gr_bes1_stat, "  BES-I", "pl");
   leg->Draw();
   
+  leg = new TLegend(0.7, 0.68-0.06*NM, 0.92, 0.68);
+  leg->SetLineColor(10);
+  leg->SetTextSize(0.035);
+  for(int i=0;i<NM;i++) {
+    leg->AddEntry(gr_m[i], LabelName[i], "l");
+  }
+  if(conf) leg->Draw();
+
+  
   c1->Update();
-  c1->SaveAs("excess_v1.pdf");  
-  c1->SaveAs("excess_v1.png");
+  c1->SaveAs(Form("excess_v1_%d.pdf",conf));  
+  c1->SaveAs(Form("excess_v1_%d.png",conf));
   
 }
