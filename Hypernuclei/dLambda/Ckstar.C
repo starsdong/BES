@@ -77,6 +77,11 @@ double CF_dl_0_eff(double *x, double *par)
   return 1 + eff/(eff+2.) * LL(x[0], par[0], par[1], par[2]);
 }
 
+double CF_dl_1(double *x, double *par)
+{
+  return 1 + 2./3 * LL(x[0], par[0], par[1], par[2]);
+}
+
 double CF_dl(double *x, double *par)
 {
   return 1 + 1./3 * LL(x[0], par[0], par[1], par[2]) + 2./3 * LL(x[0], par[0], par[3], par[4]);
@@ -104,13 +109,44 @@ void draw()
   hist->Draw();
   
   TF1 *cf[6];
+  TF1 *cf_0[6];  // doublet only
+  TF1 *cf_1[6];  // quartet only
+  const Double_t RG = 2.5;
+  ofstream outData;
   for(int i=0;i<6;i++) {
+    outData.open(Form("model/dl_model_R_2.5_D_%d_Q_%d.txt", i/3, i%3));
+
     cf[i] = new TF1(Form("func_CF_dl_%d",i),CF_dl,0,200,5);
-    cf[i]->SetParameters(2.5, par0[i/3][0], par0[i/3][1], par1[i%3][0], par1[i%3][1]);
+    cf[i]->SetParameters(RG, par0[i/3][0], par0[i/3][1], par1[i%3][0], par1[i%3][1]);
     cf[i]->SetLineWidth(2);
     cf[i]->SetLineColor(i%3+1);
+    //    cf[i]->SetLineColor(1);
     cf[i]->SetLineStyle(i/3+1);
     cf[i]->Draw("same");
+
+    cf_0[i] = new TF1(Form("func_CF_dl_0_%d",i),CF_dl_0,0,200,3);
+    cf_0[i]->SetParameters(RG, par0[i/3][0], par0[i/3][1]);
+    cf_0[i]->SetLineWidth(2);
+    cf_0[i]->SetLineColor(i%3+1);
+    //    cf_0[i]->SetLineColor(2);
+    cf_0[i]->SetLineStyle(i/3+1);
+    cf_0[i]->Draw("same");
+
+    
+    cf_1[i] = new TF1(Form("func_CF_dl_1_%d",i),CF_dl_1,0,200,3);
+    cf_1[i]->SetParameters(RG, par1[i%3][0], par1[i%3][1]);
+    cf_1[i]->SetLineWidth(2);
+    cf_1[i]->SetLineColor(i%3+1);
+    //    cf_1[i]->SetLineColor(3);
+    cf_1[i]->SetLineStyle(i/3+1);
+    cf_1[i]->Draw("same");
+
+    for(int j=0;j<200;j++) {
+      double kstar = (j+0.5);
+      std::cout << " kstar = " << kstar << " cf_0 = " << cf_0[i]->Eval(kstar) << "\t cf_1 = " << cf_1[i]->Eval(kstar) << "\t cf = " << cf[i]->Eval(kstar) << "\t cf_01 = " << cf_0[i]->Eval(kstar) + cf_1[i]->Eval(kstar) - 1.0 << std::endl;
+      outData << setw(10) << kstar << setw(12) << cf_0[i]->Eval(kstar) << setw(12) << cf_1[i]->Eval(kstar) << setw(12) << cf[i]->Eval(kstar) << std::endl;
+    }
+    outData.close();
   }
    
 }
@@ -155,13 +191,16 @@ void Ckstar()
   }
 
   TF1 *cf_fun_0[NC];  // doublet contribution only
+  TF1 *cf_fun_1[NC];  // quartet contribution only
   for(int ic=0;ic<NC;ic++) {
 #ifdef __EFF__
     cf_fun[ic] = new TF1(Form("cf_fun_%d",ic),CF_dl_eff,0,200,6);
     cf_fun_0[ic] = new TF1(Form("cf_fun_0_%d",ic), CF_dl_0_eff,0,200,4);
+    cf_fun_1[ic] = new TF1(Form("cf_fun_1_%d",ic), CF_dl_1,0,200,3);  // no difference between w/ and w/o efficiency
 #else
     cf_fun[ic] = new TF1(Form("cf_fun_%d",ic),CF_dl,0,200,5);
     cf_fun_0[ic] = new TF1(Form("cf_fun_0_%d",ic), CF_dl_0,0,200,3);
+    cf_fun_1[ic] = new TF1(Form("cf_fun_1_%d",ic), CF_dl_1,0,200,3);
 #endif
   }
 
