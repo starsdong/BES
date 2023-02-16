@@ -1,11 +1,16 @@
 #include "style.C+"
 #include "draw.C+"
+#define __EFF__  // allow efficiency for doublet?
 
 const double hbarc = 197.327;  // MeV * fm
 const double sqrtPi = TMath::Sqrt( TMath::Pi() );
 const Int_t NC = 3;
 const Int_t NP = 20;  // read in 40 points
-const Int_t NPar = 7;  // R0, R1, R2, f00, d00, f01, d01
+#ifdef __EFF__
+const Int_t NPar = 8;  // R0, R1, R2, f00, d00, f01, d01, eff
+#else
+const Int_t NPar = 7;  // R0, R1, R2, f00, d00, f01, d01,
+#endif
 const Char_t *Name[NC] = {"0to10","10to20","20to60"};
 const Char_t *LabelName[NC] = {"0-10%","10-20%","20-60%"};
 TGraphErrors *gr_data[NC];  //
@@ -64,17 +69,26 @@ const double LL(const double kstar, const double R, const double f0, const doubl
 
 
 double CF_dl_0(double *x, double *par)
-//const double kstar, const double R, const double f00, const double d00, const double f01, const double d01)
 {
-  return 1 + 1./3*LL(x[0], par[0], par[1], par[2]);
+  return 1 + 1./3 * LL(x[0], par[0], par[1], par[2]);
+}
+
+double CF_dl_0_eff(double *x, double *par)
+{
+  double eff = par[3];
+  return 1 + eff/(eff+2.) * LL(x[0], par[0], par[1], par[2]);
 }
 
 double CF_dl(double *x, double *par)
-//const double kstar, const double R, const double f00, const double d00, const double f01, const double d01)
 {
-  return 1 + 1./3*LL(x[0], par[0], par[1], par[2]) + 2./3*LL(x[0], par[0], par[3], par[4]);
+  return 1 + 1./3 * LL(x[0], par[0], par[1], par[2]) + 2./3 * LL(x[0], par[0], par[3], par[4]);
 }
 
+double CF_dl_eff(double *x, double *par)
+{
+  double eff = par[5];
+  return 1 + eff/(eff+2.) * LL(x[0], par[0], par[1], par[2]) + 2./(eff+2.) * LL(x[0], par[0], par[3], par[4]);
+}
 
 void draw()
 {
@@ -113,6 +127,9 @@ void fcn(int &npar, double *gin, double &f, double *par,int iflag ) {
     cf_fun[ic]->SetParameter(2, par[4]);
     cf_fun[ic]->SetParameter(3, par[5]);
     cf_fun[ic]->SetParameter(4, par[6]);
+#ifdef __EFF__
+    cf_fun[ic]->SetParameter(5, par[7]);
+#endif
     for(int i=0;i<gr_data[ic]->GetN();i++){
       double kstar = gr_data[ic]->GetX()[i];
       
@@ -141,8 +158,13 @@ void Ckstar()
 
   TF1 *cf_fun_0[NC];  // doublet contribution only
   for(int ic=0;ic<NC;ic++) {
+#ifdef __EFF__
+    cf_fun[ic] = new TF1(Form("cf_fun_%d",ic),CF_dl_eff,0,200,6);
+    cf_fun_0[ic] = new TF1(Form("cf_fun_0_%d",ic), CF_dl_0_eff,0,200,4);
+#else
     cf_fun[ic] = new TF1(Form("cf_fun_%d",ic),CF_dl,0,200,5);
     cf_fun_0[ic] = new TF1(Form("cf_fun_0_%d",ic), CF_dl_0,0,200,3);
+#endif
   }
 
   TCanvas *c1 = new TCanvas("c1","c1",0,0,600,900);
@@ -150,10 +172,17 @@ void Ckstar()
   c1->Draw();
   
   //  double var[NPar] = {2.8, 2.6, 2.5, -16., 2.3, 10., 3.6};
-  double var[NPar] = {2.8, 2.6, 2.5, -16., 2.3, 10., 3.6};
-  double verr[NPar] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.01};
-  double var_min[NPar] = {2.0, 2.0, 2.0, -100., 2.3, 0., 3.6};
-  double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 20., 3.6};
+#ifdef __EFF__
+  double var[NPar] = {3.0, 2.9, 2.4, -16., 2.3, 17.3, 3.6, 1.0};
+  double verr[NPar] = {0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.1, 0.05};
+  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0, 3.6, 1.0};
+  double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6, 1.0};
+#else
+  double var[NPar] = {3.0, 2.9, 2.4, -16., 2.3, 17.3, 3.6};
+  double verr[NPar] = {0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.1};
+  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0, 3.6};
+  double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6};
+#endif
   
   double err_mat[NPar][NPar];
   
@@ -161,13 +190,15 @@ void Ckstar()
   gMinuit->SetFCN(fcn);
 
   double arglist[10];
+#ifdef __EFF__
+  Char_t PARM_NAMES[NPar][255]={"R0","R1","R2","f0_0","d0_0","f0_1","d0_1", "eff"};
+#else
   Char_t PARM_NAMES[NPar][255]={"R0","R1","R2","f0_0","d0_0","f0_1","d0_1"};
+#endif
   
-  double PARM_START[2]={1,1};
-  double PARM_STEP[2]={0.1,0.1};  
   int ivarbl,ierflg;
   double bnd1, bnd2;
-  double minchi2=100;
+  double minchi2=500;
   double a1=100;
   double a2=50;
   double eff = 1;
@@ -185,7 +216,6 @@ void Ckstar()
   arglist[1] = 0.001;
   gMinuit->mnexcm("MINOS", arglist, 2, ierflg );
   cout<<"********************************************************************************************************"<<endl;
-  cout<<""<<endl;
   cout<<""<<endl;
   cout<<"Here are the results:"<<endl;
   cout<<""<<endl;
@@ -214,6 +244,9 @@ void Ckstar()
     cf_fun[ip]->SetParameter(2, var[4]);
     cf_fun[ip]->SetParameter(3, var[5]);
     cf_fun[ip]->SetParameter(4, var[6]);
+#ifdef __EFF__
+    cf_fun[ip]->SetParameter(5, var[7]);
+#endif
     cf_fun[ip]->SetLineStyle(1);
     cf_fun[ip]->SetLineWidth(3);
     cf_fun[ip]->Draw("c same");
@@ -221,6 +254,9 @@ void Ckstar()
     cf_fun_0[ip]->SetParameter(0, var[ip]);
     cf_fun_0[ip]->SetParameter(1, var[3]);
     cf_fun_0[ip]->SetParameter(2, var[4]);
+#ifdef __EFF__
+    cf_fun_0[ip]->SetParameter(3, var[7]);
+#endif
     cf_fun_0[ip]->SetLineStyle(2);
     cf_fun_0[ip]->SetLineWidth(3);
     cf_fun_0[ip]->Draw("c same");
@@ -229,7 +265,7 @@ void Ckstar()
     gr_data[ip]->Draw("p");
 
     drawText(70, 12, LabelName[ip], 42, 0.08);
-    drawText(60, 9, Form("R_{G} = %3.1f #pm %3.1f fm", var[ip], verr[ip]), 42, 0.07);
+    drawText(60, 9, Form("R_{G} = %4.2f #pm %4.2f fm", var[ip], verr[ip]), 42, 0.065);
   }
 
   c1->Update();
