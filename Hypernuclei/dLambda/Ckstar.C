@@ -63,6 +63,12 @@ const double LL(const double kstar, const double R, const double f0, const doubl
 }
 
 
+double CF_dl_0(double *x, double *par)
+//const double kstar, const double R, const double f00, const double d00, const double f01, const double d01)
+{
+  return 1 + 1./3*LL(x[0], par[0], par[1], par[2]);
+}
+
 double CF_dl(double *x, double *par)
 //const double kstar, const double R, const double f00, const double d00, const double f01, const double d01)
 {
@@ -133,8 +139,10 @@ void Ckstar()
     gr_data[i] = new TGraphErrors(NP, x_tmp, gr_tmp[i]->GetY(), 0, gr_tmp[i]->GetEY());
   }
 
+  TF1 *cf_fun_0[NC];  // doublet contribution only
   for(int ic=0;ic<NC;ic++) {
     cf_fun[ic] = new TF1(Form("cf_fun_%d",ic),CF_dl,0,200,5);
+    cf_fun_0[ic] = new TF1(Form("cf_fun_0_%d",ic), CF_dl_0,0,200,3);
   }
 
   TCanvas *c1 = new TCanvas("c1","c1",0,0,600,900);
@@ -206,7 +214,16 @@ void Ckstar()
     cf_fun[ip]->SetParameter(2, var[4]);
     cf_fun[ip]->SetParameter(3, var[5]);
     cf_fun[ip]->SetParameter(4, var[6]);
+    cf_fun[ip]->SetLineStyle(1);
+    cf_fun[ip]->SetLineWidth(3);
     cf_fun[ip]->Draw("c same");
+
+    cf_fun_0[ip]->SetParameter(0, var[ip]);
+    cf_fun_0[ip]->SetParameter(1, var[3]);
+    cf_fun_0[ip]->SetParameter(2, var[4]);
+    cf_fun_0[ip]->SetLineStyle(2);
+    cf_fun_0[ip]->SetLineWidth(3);
+    cf_fun_0[ip]->Draw("c same");
     //    gr_data[ip]->SetMarkerSize(1.5);
     //    gr_data[ip]->SetMarkerStyle(20);
     gr_data[ip]->Draw("p");
