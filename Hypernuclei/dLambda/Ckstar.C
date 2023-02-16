@@ -176,10 +176,11 @@ void Ckstar()
   double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0., 3.6, 0.0};
   double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6, 1.0};
 #else
-  double var[NPar] = {3.0, 2.9, 2.4, -16., 2.3, 17.3, 3.6};
+  //  double var[NPar] = {3.0, 2.9, 2.4, -10., 2.3, 10, 3.6};
+  double var[NPar] = {3.0, 2.9, 2.5, -10., 2.3, 10, 3.6};
   double verr[NPar] = {0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.1};
-  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0., 3.6};
-  double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6};
+  double var_min[NPar] = {2.5, 2.5, 2.0, -50., 2.3, 3., 3.6};
+  double var_max[NPar] = {3.5, 3.5, 3.0, -3., 2.3, 50., 3.6};
 #endif
   
   double err_mat[NPar][NPar];
@@ -207,12 +208,14 @@ void Ckstar()
     gMinuit->mnparm( i, PARM_NAMES[i], var[i], verr[i], var_min[i], var_max[i], ivarbl);
   }
   
-  arglist[0] = 0.001;            // do at least 1000 function calls
+
+  arglist[0] = 0.0001;
   gMinuit->mnexcm("SET EPSmachine", arglist, 2, ierflg );
-  
-  arglist[0] = 10000;
-  arglist[1] = 0.001;
-  gMinuit->mnexcm("MINOS", arglist, 2, ierflg );
+
+  arglist[0] = 100000;
+  arglist[1] = 0.0001;
+  //  gMinuit->mnexcm("MINOS", arglist, 2, ierflg );
+  gMinuit->mnexcm("MIGRAD", arglist, 2, ierflg );
   cout<<"********************************************************************************************************"<<endl;
   cout<<""<<endl;
   cout<<"Here are the results:"<<endl;
