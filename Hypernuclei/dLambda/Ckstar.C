@@ -143,7 +143,7 @@ void Ckstar()
   
   //  double var[NPar] = {2.8, 2.6, 2.5, -16., 2.3, 10., 3.6};
   double var[NPar] = {2.8, 2.6, 2.5, -16., 2.3, 10., 3.6};
-  double verr[NPar] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+  double verr[NPar] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.01};
   double var_min[NPar] = {2.0, 2.0, 2.0, -100., 2.3, 0., 3.6};
   double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 20., 3.6};
   
@@ -195,7 +195,7 @@ void Ckstar()
     TH1D *hist = new TH1D("hist","",1,0,100);
     hist->SetMinimum(0.);
     hist->SetMaximum(15.);
-    hist->GetXaxis()->SetTitle("k^{*} (MeV/c)");
+    hist->GetXaxis()->SetTitle("k* (MeV/c)");
     hist->GetYaxis()->SetTitle("d-#Lambda Correlation");
     hist->Draw();
     
@@ -211,28 +211,12 @@ void Ckstar()
     //    gr_data[ip]->SetMarkerStyle(20);
     gr_data[ip]->Draw("p");
 
-    drawText(60, 10, Form("%s R_{G} = %3.1f #pm %3.1f", LabelName[ip], var[ip], verr[ip]), 0.08);
+    drawText(70, 12, LabelName[ip], 42, 0.08);
+    drawText(60, 9, Form("R_{G} = %3.1f #pm %3.1f fm", var[ip], verr[ip]), 42, 0.07);
   }
 
   c1->Update();
   c1->SaveAs("CF_dl.pdf");
   c1->SaveAs("CF_dl.png");
-  /*
-  double rr, rrerr;
-  double xpp, xpperr;
-  double xpl, xplerr;
-  double xll, xllerr;
-  double f0fit,f0fiterr;
-  double d0fit, d0fiterr;
-  
-  gMinuit->GetParameter(0,rr,rrerr);
-  cout<<"R="<<rr<<"\u00b1"<<rrerr<<endl;
-  cout<<""<<endl;
-  gMinuit->GetParameter(4,f0fit,f0fiterr);
-  cout<<"f0="<<f0fit<<"\u00b1"<<f0fiterr<<endl;
-  cout<<""<<endl;
-  gMinuit->GetParameter(5,d0fit,d0fiterr);
-  cout<<"d0="<<d0fit<<"\u00b1"<<d0fiterr<<endl;
-  */
   
 }
