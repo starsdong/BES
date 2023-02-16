@@ -205,6 +205,7 @@ void Ckstar()
   }
 
   TCanvas *c1 = new TCanvas("c1","c1",0,0,600,900);
+  c1->SetLeftMargin(0.1);
   c1->Divide(1,3);
   c1->Draw();
   
@@ -216,7 +217,7 @@ void Ckstar()
   double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6, 1.0};
 #else
   //  double var[NPar] = {3.0, 2.9, 2.4, -10., 2.3, 10, 3.6};
-  double var[NPar] = {3.0, 2.9, 2.5, -10., 2.3, 10, 3.6};
+  double var[NPar] = {3.0, 2.9, 2.5, -20., 2.3, 10, 3.6};
   double verr[NPar] = {0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.1};
   double var_min[NPar] = {2.5, 2.5, 2.0, -50., 2.3, 3., 3.6};
   double var_max[NPar] = {3.5, 3.5, 3.0, -3., 2.3, 50., 3.6};
@@ -253,8 +254,8 @@ void Ckstar()
 
   arglist[0] = 100000;
   arglist[1] = 0.0001;
-  //  gMinuit->mnexcm("MINOS", arglist, 2, ierflg );
-  gMinuit->mnexcm("MIGRAD", arglist, 2, ierflg );
+  gMinuit->mnexcm("MINOS", arglist, 2, ierflg );
+  //  gMinuit->mnexcm("MIGRAD", arglist, 2, ierflg );
   cout<<"********************************************************************************************************"<<endl;
   cout<<""<<endl;
   cout<<"Here are the results:"<<endl;
@@ -267,12 +268,21 @@ void Ckstar()
     gMinuit->GetParameter(i, var[i], verr[i]);
   }
 
+  TGraph *gr_err[3];
+  for(int i=0;i<3;i++) {
+    //    if(i!=0) continue;
+    gMinuit->SetErrorDef((i+1)*(i+1));
+    gr_err[i] = (TGraph *)gMinuit->Contour(100, 3, 5);
+  }
+  
   for(int ip=0;ip<NC;ip++) {
     c1->cd(ip+1);
   
     TH1D *hist = new TH1D("hist","",1,0,100);
     hist->SetMinimum(0.);
     hist->SetMaximum(15.);
+    hist->GetXaxis()->SetLabelOffset(0.015);
+    hist->GetXaxis()->SetTitleOffset(1.0);
     hist->GetXaxis()->SetTitle("k* (MeV/c)");
     hist->GetYaxis()->SetTitle("d-#Lambda Correlation");
     hist->Draw();
@@ -311,5 +321,28 @@ void Ckstar()
   c1->Update();
   c1->SaveAs("CF_dl.pdf");
   c1->SaveAs("CF_dl.png");
+
+
+  TCanvas *c2 = new TCanvas("c2","c2",600,0,600,600);
+  c1->SetBottomMargin(0.1);
+  c1->SetLeftMargin(0.1);
+  c1->Draw();
+
+  TH1D *hC = new TH1D("hC","", 1, -40, 0);
+  hC->SetMinimum(0);
+  hC->SetMaximum(40);
+  hC->GetXaxis()->SetLabelOffset(0.01);
+  hC->GetXaxis()->SetTitle("f_{D} (fm)");
+  hC->GetYaxis()->SetTitle("f_{Q} (fm)");
+  hC->Draw();
+
+  for(int i=0;i<3;i++) {
+    //    if(i!=0) continue;
+    gr_err[i]->SetLineColor(i+1);
+    gr_err[i]->SetLineWidth(2);
+    gr_err[i]->Draw("c");
+  }
+
+  drawHistBox(-40, 0, 0, 40);
   
 }
