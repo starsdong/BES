@@ -1,6 +1,6 @@
 #include "style.C+"
 #include "draw.C+"
-#define __EFF__  // allow efficiency for doublet?
+//#define __EFF__  // allow efficiency for doublet?
 
 const double hbarc = 197.327;  // MeV * fm
 const double sqrtPi = TMath::Sqrt( TMath::Pi() );
@@ -24,18 +24,16 @@ complex<double> fkstar(const double f0, const double d0, const double kstar)   /
 
 const double F1(const double z)
 {
-  return 0.5*sqrtPi*exp(-z*z)/z*ROOT::Math::erf(z);
-  /*
-    const Int_t N = 100;
+  //  return 0.5*sqrtPi*exp(-z*z)/z*ROOT::Math::erf(z);
+    const Int_t N = 200;
     const double dt = z/N;
     
     double sum = 0;
     for(int i=0;i<N;i++) {
-    double t = (i+0.5)*z/N;
-    sum += exp(t*t-z*z)/z * dt;
+      double t = (i+0.5)*z/N;
+      sum += exp(t*t-z*z)/z * dt;
     }
     return sum;
-  */
 }
 
 const double F2(const double z)
@@ -175,12 +173,12 @@ void Ckstar()
 #ifdef __EFF__
   double var[NPar] = {3.0, 2.9, 2.4, -16., 2.3, 17.3, 3.6, 1.0};
   double verr[NPar] = {0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.1, 0.05};
-  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0, 3.6, 1.0};
+  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0., 3.6, 0.0};
   double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6, 1.0};
 #else
   double var[NPar] = {3.0, 2.9, 2.4, -16., 2.3, 17.3, 3.6};
   double verr[NPar] = {0.3, 0.3, 0.3, 0.3, 0.1, 0.3, 0.1};
-  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0, 3.6};
+  double var_min[NPar] = {2.0, 2.0, 2.0, -50., 2.3, 0., 3.6};
   double var_max[NPar] = {4.0, 4.0, 4.0, -0., 2.3, 50., 3.6};
 #endif
   
@@ -220,7 +218,7 @@ void Ckstar()
   cout<<"Here are the results:"<<endl;
   cout<<""<<endl;
   gMinuit->mnstat(minchi2,a2, eff,npars, npars, matrix);
-  cout<<"chi2/NDF="<<minchi2/(gr_data[0]->GetN()*3-NPar+2)<<endl;
+  cout<<"chi2 / NDF = "<<minchi2 << " / " << (gr_data[0]->GetN()*3-NPar+2)<<endl;
   cout<<""<<endl;
 
   for(int i=0;i<NPar;i++) {
