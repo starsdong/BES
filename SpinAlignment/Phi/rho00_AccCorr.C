@@ -21,9 +21,9 @@ void rho00_AccCorr(const Double_t sigY = 9.9)
   const Int_t NMAX = 200;
   
   double_t r0[NV2][NPt], r0e[NV2][NPt];
-  TCanvas *c1 = new TCanvas("c1","",1600,900);
+  TCanvas *c1 = new TCanvas("c1","",2000,1000);
   c1->Draw();
-  c1->Divide(6,3);
+  c1->Divide(NPt, NV2);
   //  TFile *fin = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root",v2, sigY));
   TFile *fin[NV2];
   TH1D *fRc[NV2][NPt];
@@ -71,7 +71,7 @@ void rho00_AccCorr(const Double_t sigY = 9.9)
   double r_corr[NV2][NPt], re_corr[NV2][NPt];
   TFile *fCorr = new TFile(Form("root/drho_a2_pT_Y_%3.1f.root", sigY));
   TGraphErrors *gr_drho[NV2];
-  for(int i=1;i<NV2;i++) {
+  for(int i=0;i<NV2;i++) {
     gr_drho[i] = (TGraphErrors *)fCorr->Get(Form("drho_%d",i));
     for(int j=0;j<NPt;j++) {
       r_corr[i][j] = r[i][j] - gr_drho[i]->GetY()[j];
@@ -79,9 +79,11 @@ void rho00_AccCorr(const Double_t sigY = 9.9)
     }
   }
   
-  TCanvas *c2 = new TCanvas("c2","");
+  TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->Draw();
-  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.015,0.035);
+  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.02,0.04);
+  h2->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
+  h2->GetYaxis()->SetTitle("#Delta#rho_{00} (Accep. Corr.) from cos#theta* fit");  
   h2->Draw();
   drawLine(0.0, 0.0, 5.0, 0.0, 2, 8, 1);
 
@@ -89,34 +91,64 @@ void rho00_AccCorr(const Double_t sigY = 9.9)
   TGraphErrors *gr_corr[NV2];
   const Int_t markerStyle[NV2] = {24, 20, 21, 22};
   
-  for(int i=1;i<NV2;i++) {
+  for(int i=0;i<NV2;i++) {
     gr[i] = new TGraphErrors(NPt, pT, r[i], 0, re[i]);
+    gr[i]->SetName(Form("rho00_AccCorr_CosThetaBin_%d",i));
     gr[i]->SetMarkerStyle(markerStyle[i]);
     gr[i]->SetMarkerSize(2.0);
+    gr[i]->SetMarkerColor(2);
     gr[i]->SetLineWidth(2);
+    gr[i]->SetLineColor(2);
+    gr[i]->Draw("p");
 
     
     gr_corr[i] = new TGraphErrors(NPt, pT, r_corr[i], 0, re_corr[i]);
+    gr_corr[i]->SetName(Form("rho00Corr_AccCorr_CosThetaBin_%d",i));
     gr_corr[i]->SetMarkerStyle(markerStyle[i]);
     gr_corr[i]->SetMarkerSize(2.0);
-    gr_corr[i]->SetMarkerColor(2);
+    gr_corr[i]->SetMarkerColor(4);
     gr_corr[i]->SetLineWidth(2);
-    gr_corr[i]->SetLineColor(2);
+    gr_corr[i]->SetLineColor(4);
     gr_corr[i]->Draw("p");
   }
 
   // gr[0]->SetFillColor(5);
   // gr[0]->Draw("e3");
 
-  for(int i=1;i<NV2;i++) {
+  for(int i=0;i<NV2;i++) {
     gr[i]->Draw("p");
     gr_corr[i]->Draw("p");	
   }
+
+  TLegend *leg = new TLegend(0.65, 0.64, 0.8, 0.88);
+  leg->SetTextSize(0.035);
+  leg->SetLineColor(10);
+  for(int i=NV2-1;i>=0;i--) {
+    leg->AddEntry(gr[i], Form("v_{2} = %3.1f", v2[i]), "pl");
+  }
+  leg->Draw();
+  leg = new TLegend(0.8, 0.64, 0.95, 0.88);
+  leg->SetTextSize(0.035);
+  leg->SetLineColor(10);
+  for(int i=NV2-1;i>=0;i--) {
+    leg->AddEntry(gr_corr[i], Form("v_{2} = %3.1f", v2[i]), "pl");
+  }
+  leg->Draw();
+  drawText(3.2, 0.035, "RC", 42, 0.05, 0, 2);
+  drawText(4.0, 0.035, "RC corr.", 42, 0.05, 0, 4);
+  drawHistBox(0., 5.0, -0.02, 0.04);
+  
   c2->Update();
 
   c2->SaveAs(Form("fig/rho00_AccCorr_pT_Y_%3.1f.pdf", sigY));
   c2->SaveAs(Form("fig/rho00_AccCorr_pT_Y_%3.1f.png", sigY));
   
+  TFile *fout = new TFile(Form("root/rho00_AccCorr_pT_Y_%3.1f.root", sigY),"recreate");
+  for(int i=0;i<NV2;i++) {
+    gr[i]->Write();
+    gr_corr[i]->Write();
+  }
+  fout->Close();
   
     /*
   TH1D *fMc = ((TH2D *)fin->Get("hPtCosTheta"))->ProjectionY("Mc",i1,i2);

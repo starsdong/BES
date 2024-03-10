@@ -153,13 +153,6 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
     K2mom.SetXYZM(-px_pri, -py_pri, -pz_pri, MassK);
     double phi_star = K1mom.Phi();
     double cos2phi = TMath::Cos(2.*(phi_star - phi));
-    if(fabs(y)<1.0) {
-      hPtCosTheta->Fill(pT, costheta_pri);
-      hPtCos2Phi->Fill(pT, cos2phi);
-      hPtV2->Fill(pT, TMath::Cos(2.*(phi - Psi_RP)));
-      hPtCos2PhiRP->Fill(pT, TMath::Cos(2.*(K1mom.Phi() - Psi_RP)));
-      hPtCosTheta2->Fill(pT, costheta_pri*costheta_pri);
-    }
 
     // transform to the lab frame
     K1mom.Boost(Phimom.BoostVector());
@@ -171,8 +164,17 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
     //    double costheta_rc = K1momStar.Y()/K1momStar.Vect().Mag();
     TVector3 L_unit(TMath::Cos(Psi_RP + TMath::Pi()*0.5), TMath::Sin(Psi_RP + TMath::Pi()*0.5), 0);
     double costheta_rc = K1momStar.Vect().Dot(L_unit)/K1momStar.Vect().Mag();
-    hCosThetaDiff->Fill(costheta_pri, costheta_rc-costheta_pri);
+    if(fabs(y)<1.0) {
+      hPtCosTheta->Fill(pT, costheta_rc);
+      hPtCos2Phi->Fill(pT, cos2phi);
+      hPtV2->Fill(pT, TMath::Cos(2.*(phi - Psi_RP)));
+      hPtCos2PhiRP->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
+      hPtCosTheta2->Fill(pT, costheta_rc*costheta_rc);
+      
+      hCosThetaDiff->Fill(costheta_pri, costheta_rc-costheta_pri);
+    }
 
+    
     // Check the momentum
     if(0) {
       cout << " Phi momentum = " << Phimom.Px() << " " << Phimom.Py() << " " << Phimom.Pz() << " " << Phimom.E() << endl;
@@ -188,7 +190,7 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	hPtCos2PhiRc->Fill(pT, cos2phi);
 	hPtV2Rc->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	hPtCos2PhiRPRc->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
-	hPtCosTheta2Rc->Fill(pT, costheta_pri*costheta_pri);
+	hPtCosTheta2Rc->Fill(pT, costheta_rc*costheta_rc);
       }
 
       if(K1mom.Pt()>0.2 && K2mom.Pt()>0.2) {
@@ -199,7 +201,7 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	  hPtCos2PhiRc1->Fill(pT, cos2phi);
 	  hPtV2Rc1->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	  hPtCos2PhiRPRc1->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
-	  hPtCosTheta2Rc1->Fill(pT, costheta_pri*costheta_pri);
+	  hPtCosTheta2Rc1->Fill(pT, costheta_rc*costheta_rc);
 	}
 	
 	hPtPhiK1->Fill(pT, K1mom.Pt());
@@ -214,7 +216,7 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	    hPtCos2PhiRc2->Fill(pT, cos2phi);
 	    hPtV2Rc2->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	    hPtCos2PhiRPRc2->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
-	    hPtCosTheta2Rc2->Fill(pT, costheta_pri*costheta_pri);
+	    hPtCosTheta2Rc2->Fill(pT, costheta_rc*costheta_rc);
 	  }
 	  
 	  if(gRandom->Rndm()<gr_eff_tof->Eval(K1mom.Pt()) &&
@@ -226,7 +228,7 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	      hPtCos2PhiRc3->Fill(pT, cos2phi);
 	      hPtV2Rc3->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	      hPtCos2PhiRPRc3->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
-	      hPtCosTheta2Rc3->Fill(pT, costheta_pri*costheta_pri);
+	      hPtCosTheta2Rc3->Fill(pT, costheta_rc*costheta_rc);
 	    }
 	  }	  
 

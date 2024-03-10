@@ -2,7 +2,10 @@
 #include "draw.C+"
 #include "/Users/starsdong/work/work/C/eff_err.C"
 
-//void rho00(const Double_t v2 = 0.1, const Double_t sigY = 5.0)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// a2 = < cos(2*(phi* - phi)) >  - phi*:  kaon momentum in phi rest frame, phi:  phi meson angle
+// then calculate correction to rho_00:  delta_rho00 =  -4/3 * a2 * v2 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 void a2(const Double_t sigY = 9.9)
 {
   style();
@@ -21,19 +24,19 @@ void a2(const Double_t sigY = 9.9)
   // const Double_t pT[NPt] = {0.9, 1.5, 2.1, 2.7, 3.6, 4.8};
   const Int_t NV2 = 4;
   const Double_t v2[NV2] = {0.0, 0.1, 0.2, 0.3};
-  const Double_t sc = -4./3.;
+  const Double_t sc = -4./3.;  
 
   double_t a2[NV2][NPt], a2e[NV2][NPt];
   double_t drho[NV2][NPt], drhoe[NV2][NPt];
-  TCanvas *c1 = new TCanvas("c1","",1600,900);
+  TCanvas *c1 = new TCanvas("c1","",2000,1000);
   c1->Draw();
-  c1->Divide(6,3);
+  c1->Divide(NPt,NV2);
   //  TFile *fin = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root",v2, sigY));
   TFile *fin[NV2];
+  TGraphErrors *gr_e[NV2][NPt];
+  TH1D *fMc[NV2][NPt], *fRc[NV2][NPt];
   for(int iv2 = 0;iv2<NV2;iv2++) {
     fin[iv2] = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root", v2[iv2], sigY));
-    TH1D *fMc[NV2][NPt], *fRc[NV2][NPt];
-    TGraphErrors *gr_e[NV2][NPt];
     for(int i=0;i<NPt;i++) {
       c1->cd(i+1+iv2*NPt);
       fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hPtCos2Phi"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
@@ -50,9 +53,13 @@ void a2(const Double_t sigY = 9.9)
 	eff_err(m, n, &eff[j], &err[j]);
       }
       gr_e[iv2][i] = new TGraphErrors(fMc[iv2][i]->GetNbinsX(), xx, eff, 0, err);
+      gr_e[iv2][i]->SetName(Form("a2_eff_%d_%d", iv2, i));
 
       TH1D *h0 = new TH1D("h0","",1,-1,1);
       h0->SetMaximum(eff[0]/0.7);
+      h0->GetXaxis()->CenterTitle();
+      h0->GetXaxis()->SetTitle("< cos(2*(#phi* - #phi)) >");
+      h0->GetYaxis()->SetTitle("Efficiency*Acceptance");  
       h0->Draw();
 
       gr_e[iv2][i]->Draw("p");
@@ -60,16 +67,26 @@ void a2(const Double_t sigY = 9.9)
       a2[iv2][i] = funA2->GetParameter(0);
       a2e[iv2][i] = funA2->GetParError(0);
 
+      drawText(-0.4, eff[0]/0.7*0.9, Form("v_{2} = %3.1f", v2[iv2]), 42, 0.08);
+      drawText(-0.4, eff[0]/0.7*0.8, Form("p_{T} = %4.2f", pT[i]), 42, 0.08);
+      drawText(-0.4, eff[0]*0.15, Form("a_{2} = %7.4f", a2[iv2][i]), 42, 0.08);
+      
+
       drho[iv2][i] = sc * a2[iv2][i] * v2[iv2];
       drhoe[iv2][i] = sc * a2e[iv2][i] * v2[iv2];
       c1->Update();
     }
-    fin[iv2]->Close();
+    //    fin[iv2]->Close();
   }
+  c1->Update();
+  c1->SaveAs(Form("fig/a2_fit_Y_%3.1f.pdf", sigY));
+  c1->SaveAs(Form("fig/a2_fit_Y_%3.1f.png", sigY));  
 
-  TCanvas *c2 = new TCanvas("c2","");
+  TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->Draw();
   TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.1, 0.01);
+  h2->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
+  h2->GetYaxis()->SetTitle("Eff. Slope a_{2}");
   h2->Draw();
   drawLine(0.0, 0.0, 5.0, 0.0, 2, 8, 1);
 
@@ -77,19 +94,30 @@ void a2(const Double_t sigY = 9.9)
   const Int_t markerStyle[NV2] = {24, 20, 21, 22};
   for(int i=0;i<NV2;i++) {
     gr[i] = new TGraphErrors(NPt, pT, a2[i], 0, a2e[i]);
+    gr[i]->SetName(Form("a2_%d",i));
     gr[i]->SetMarkerStyle(markerStyle[i]);
     gr[i]->SetMarkerSize(2.0);
     gr[i]->SetLineWidth(2);
     gr[i]->Draw("p");
   }
+
+  TLegend *leg = new TLegend(0.66, 0.24, 0.9, 0.54);
+  leg->SetTextSize(0.05);
+  for(int i=0;i<NV2;i++) {
+    leg->AddEntry(gr[i], Form(" v_{2} = %3.1f", v2[i]));
+  }
+  leg->Draw();
+  drawHistBox(0., 5.0, -0.1, 0.01);
   c2->Update();
 
   c2->SaveAs(Form("fig/a2_pT_Y_%3.1f.pdf", sigY));
   c2->SaveAs(Form("fig/a2_pT_Y_%3.1f.png", sigY));
   
-  TCanvas *c3 = new TCanvas("c3","",800,600);
+  TCanvas *c3 = new TCanvas("c3","",800,0,800,600);
   c3->Draw();
   TH2D *h3 = new TH2D("h3","",1,0.0,5.0,1,-0.01, 0.04);
+  h3->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
+  h3->GetYaxis()->SetTitle("Corretion #equiv -4/3*a_{2}*v_{2}");
   h3->Draw();
   drawLine(0.0, 0.0, 5.0, 0.0, 2, 8, 1);
 
@@ -102,11 +130,22 @@ void a2(const Double_t sigY = 9.9)
     gr_drho[i]->SetLineWidth(2);
     gr_drho[i]->Draw("p");
   }
+  leg = new TLegend(0.66, 0.64, 0.9, 0.94);
+  leg->SetTextSize(0.05);
+  for(int i=NV2-1;i>=0;i--) {
+    leg->AddEntry(gr[i], Form(" v_{2} = %3.1f", v2[i]));
+  }
+  leg->Draw();
+  drawHistBox(0., 5.0, -0.01, 0.04);
   c3->Update();
 
   TFile *fout = new TFile(Form("root/drho_a2_pT_Y_%3.1f.root", sigY),"recreate");
   for(int i=0;i<NV2;i++) {
+    gr[i]->Write();
     gr_drho[i]->Write();
+    for(int j=0;j<NPt;j++) {
+      gr_e[i][j]->Write();
+    }
   }
   fout->Close();
 

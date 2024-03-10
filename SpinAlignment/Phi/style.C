@@ -25,7 +25,7 @@ void style()
 
   gStyle->SetNdivisions(108,"X");
   gStyle->SetNdivisions(108,"Y");
-  gStyle->SetLabelOffset(0.002,"X");
+  gStyle->SetLabelOffset(0.005,"X");
   gStyle->SetLabelOffset(0.01,"Y");
   gStyle->SetLabelSize(0.05,"X");
   gStyle->SetLabelSize(0.05,"Y");

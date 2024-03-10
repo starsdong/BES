@@ -21,9 +21,9 @@ void rho00_AccCorr_v2pt()
   const Int_t NMAX = 200;
   
   double_t r0[NV2][NPt], r0e[NV2][NPt];
-  TCanvas *c1 = new TCanvas("c1","",1600,900);
+  TCanvas *c1 = new TCanvas("c1","",2000,1000);
   c1->Draw();
-  c1->Divide(6,3);
+  c1->Divide(NPt, NV2);
   //  TFile *fin = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root",v2, sigY));
   TFile *fin[NV2];
   TH1D *fRc[NV2][NPt];
@@ -89,14 +89,16 @@ void rho00_AccCorr_v2pt()
   TGraphErrors *gr_corr[NV2];
   const Int_t markerStyle[NV2] = {24, 20};
   
-  for(int i=1;i<NV2;i++) {
+  for(int i=0;i<NV2;i++) {
     gr[i] = new TGraphErrors(NPt, pT, r[i], 0, re[i]);
+    gr[i]->SetName(Form("rho00_AccCorr_CosThetaBin_%d",i));
     gr[i]->SetMarkerStyle(markerStyle[i]);
     gr[i]->SetMarkerSize(2.0);
     gr[i]->SetLineWidth(2);
 
     
     gr_corr[i] = new TGraphErrors(NPt, pT, r_corr[i], 0, re_corr[i]);
+    gr_corr[i]->SetName(Form("rho00Corr_AccCorr_CosThetaBin_%d",i));
     gr_corr[i]->SetMarkerStyle(markerStyle[i]);
     gr_corr[i]->SetMarkerSize(2.0);
     gr_corr[i]->SetMarkerColor(2);
@@ -108,7 +110,7 @@ void rho00_AccCorr_v2pt()
   // gr[0]->SetFillColor(5);
   // gr[0]->Draw("e3");
 
-  for(int i=1;i<NV2;i++) {
+  for(int i=0;i<NV2;i++) {
     gr[i]->Draw("p");
     gr_corr[i]->Draw("p");	
   }
@@ -116,6 +118,13 @@ void rho00_AccCorr_v2pt()
 
   c2->SaveAs(Form("fig/rho00_AccCorr_pT_v2pt.pdf"));
   c2->SaveAs(Form("fig/rho00_AccCorr_pT_v2pt.png"));
+
+  TFile *fout = new TFile(Form("root/rho00_AccCorr_v2pt.root"),"recreate");
+  for(int i=0;i<NV2;i++) {
+    gr[i]->Write();
+    gr_corr[i]->Write();
+  }
+  fout->Close();
   
   
     /*
