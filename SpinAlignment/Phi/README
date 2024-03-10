@@ -1,0 +1,16 @@
+A) accept_Sergei.C:
+   used to generate phi->KK decay including different phi v2(flat) scenario and acceptance*efficiency.
+   After creating root files, analysis macros:
+     1) a2.C - calculate cos(2*(phi*-phi)) efficiency (all included - Rc3) slope a2, and correction value -4/3*a2*v2
+        a2_Accept.C - calculate a2 for any intermediate acceptance*efficiency case
+        makeA2Comp.C - as the name
+     2) drho00_theta2.C - calculate drho00 using 5/2(<cos^2theta> - 1/3)
+     3) drho00.C - calculate drho00 using -4/3<cos(2*(phi*-Psi))>
+                    - correction (-4/3*a2*v2) included for comparison
+     4) rho00.C - calculate rho00 using (1-rho)+(3rho-1)*costheta* fit to costheta* distribution
+     5) rho00_AccCorr.C - applying experiment efficiency correction (v2=0 case)
+     6) makeRho00Comp.C - compare three different calculations (2,3/5,4/5 above) 
+
+B) accept_Sergei_v2pt.C:
+    (unfinished) taking realistic v2(pT) distribution
+         
