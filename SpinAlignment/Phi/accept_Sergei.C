@@ -205,10 +205,10 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
       hCosThetaDiff->Fill(costheta_pri, costheta_rc-costheta_pri);
 
       if(pT>1.2 && pT<5.4) {
-	hYCosTheta->Fill(y, costheta_rc);
-	hYCos2Phi->Fill(y, cos2phi);
-	hYCos2PhiRP->Fill(y, TMath::Cos(2.*(phi_star - Psi_RP)));
-	hYCosTheta2->Fill(y, costheta_rc*costheta_rc);
+	hYCosTheta->Fill(fabs(y), costheta_rc);
+	hYCos2Phi->Fill(fabs(y), cos2phi);
+	hYCos2PhiRP->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	hYCosTheta2->Fill(fabs(y), costheta_rc*costheta_rc);
       }
     }
 
@@ -231,10 +231,10 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	hPtCosTheta2Rc->Fill(pT, costheta_rc*costheta_rc);
 
 	if(pT>1.2 && pT<5.4) {
-	  hYCosThetaRc->Fill(y, costheta_rc);
-	  hYCos2PhiRc->Fill(y, cos2phi);
-	  hYCos2PhiRPRc->Fill(y, TMath::Cos(2.*(phi_star - Psi_RP)));
-	  hYCosTheta2Rc->Fill(y, costheta_rc*costheta_rc);
+	  hYCosThetaRc->Fill(fabs(y), costheta_rc);
+	  hYCos2PhiRc->Fill(fabs(y), cos2phi);
+	  hYCos2PhiRPRc->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	  hYCosTheta2Rc->Fill(fabs(y), costheta_rc*costheta_rc);
 	}
       }
 
@@ -249,10 +249,10 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	  hPtCosTheta2Rc1->Fill(pT, costheta_rc*costheta_rc);
 	  
 	  if(pT>1.2 && pT<5.4) {
-	    hYCosThetaRc1->Fill(y, costheta_rc);
-	    hYCos2PhiRc1->Fill(y, cos2phi);
-	    hYCos2PhiRPRc1->Fill(y, TMath::Cos(2.*(phi_star - Psi_RP)));
-	    hYCosTheta2Rc1->Fill(y, costheta_rc*costheta_rc);
+	    hYCosThetaRc1->Fill(fabs(y), costheta_rc);
+	    hYCos2PhiRc1->Fill(fabs(y), cos2phi);
+	    hYCos2PhiRPRc1->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	    hYCosTheta2Rc1->Fill(fabs(y), costheta_rc*costheta_rc);
 	  }
 	}
 	
@@ -271,10 +271,10 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	    hPtCosTheta2Rc2->Fill(pT, costheta_rc*costheta_rc);
 	    
 	    if(pT>1.2 && pT<5.4) {
-	      hYCosThetaRc2->Fill(y, costheta_rc);
-	      hYCos2PhiRc2->Fill(y, cos2phi);
-	      hYCos2PhiRPRc2->Fill(y, TMath::Cos(2.*(phi_star - Psi_RP)));
-	      hYCosTheta2Rc2->Fill(y, costheta_rc*costheta_rc);
+	      hYCosThetaRc2->Fill(fabs(y), costheta_rc);
+	      hYCos2PhiRc2->Fill(fabs(y), cos2phi);
+	      hYCos2PhiRPRc2->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	      hYCosTheta2Rc2->Fill(fabs(y), costheta_rc*costheta_rc);
 	    }
 	  }
 	  
@@ -290,10 +290,10 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 	      hPtCosTheta2Rc3->Fill(pT, costheta_rc*costheta_rc);
 
 	      if(pT>1.2 && pT<5.4) {
-		hYCosThetaRc3->Fill(y, costheta_rc);
-		hYCos2PhiRc3->Fill(y, cos2phi);
-		hYCos2PhiRPRc3->Fill(y, TMath::Cos(2.*(phi_star - Psi_RP)));
-		hYCosTheta2Rc3->Fill(y, costheta_rc*costheta_rc);
+		hYCosThetaRc3->Fill(fabs(y), costheta_rc);
+		hYCos2PhiRc3->Fill(fabs(y), cos2phi);
+		hYCos2PhiRPRc3->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+		hYCosTheta2Rc3->Fill(fabs(y), costheta_rc*costheta_rc);
 	      }
 	    }
 	  }	  
