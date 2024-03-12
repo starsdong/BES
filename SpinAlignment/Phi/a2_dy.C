@@ -6,10 +6,10 @@
 // a2 = < cos(2*(phi* - phi)) >  - phi*:  kaon momentum in phi rest frame, phi:  phi meson angle
 // then calculate correction to rho_00:  delta_rho00 =  -4/3 * a2 * v2 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Rapidity dependence
+// Rapidity dependence - differential
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void a2_y(const Double_t sigY = 9.9)
+void a2_dy(const Double_t sigY = 9.9)
 {
   style();
     
@@ -19,7 +19,8 @@ void a2_y(const Double_t sigY = 9.9)
 
   const Int_t NY = 10;
   const Int_t i_edge[NY] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
-  const Double_t rap[NY] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+  //  const Double_t rap[NY] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+  const Double_t rap[NY] = {0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95};
   const Int_t NV2 = 4;
   const Double_t v2[NV2] = {0.0, 0.1, 0.2, 0.3};
   const Double_t sc = -4./3.;  
@@ -37,9 +38,9 @@ void a2_y(const Double_t sigY = 9.9)
     fin[iv2] = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root", v2[iv2], sigY));
     for(int i=0;i<NY;i++) {
       c1->cd(i+1+iv2*NY);
-      fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2Phi"))->ProjectionY(Form("Mc_%d_%d",iv2, i),1,i_edge[i]); // accumulative
+      fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2Phi"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]-1,i_edge[i]); // accumulative
       fMc[iv2][i]->Rebin(20);
-      fRc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2PhiRc3"))->ProjectionY(Form("Rc_%d_%d",iv2, i),1,i_edge[i]);
+      fRc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2PhiRc3"))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]-1,i_edge[i]);
       fRc[iv2][i]->Rebin(20);
 
       double xx[NMAX];
@@ -66,7 +67,7 @@ void a2_y(const Double_t sigY = 9.9)
       a2e[iv2][i] = funA2->GetParError(0);
 
       drawText(-0.4, eff[0]/0.7*0.9, Form("v_{2} = %3.1f", v2[iv2]), 42, 0.08);
-      drawText(-0.4, eff[0]/0.7*0.8, Form("|y| < %3.1f", rap[i]), 42, 0.08);
+      drawText(-0.4, eff[0]/0.7*0.8, Form("|y| = %3.1f", rap[i]), 42, 0.08);
       drawText(-0.4, eff[0]*0.15, Form("a_{2} = %7.4f", a2[iv2][i]), 42, 0.08);
       
 
@@ -77,16 +78,16 @@ void a2_y(const Double_t sigY = 9.9)
     //    fin[iv2]->Close();
   }
   c1->Update();
-  c1->SaveAs(Form("fig/a2_y_fit_Y_%3.1f.pdf", sigY));
-  c1->SaveAs(Form("fig/a2_y_fit_Y_%3.1f.png", sigY));  
+  c1->SaveAs(Form("fig/a2_dy_fit_Y_%3.1f.pdf", sigY));
+  c1->SaveAs(Form("fig/a2_dy_fit_Y_%3.1f.png", sigY));  
 
   TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->Draw();
-  TH2D *h2 = new TH2D("h2","",1,0.0,1.2,1,-0.1, 0.01);
+  TH2D *h2 = new TH2D("h2","",1,0.0,1.0,1,-0.3, 0.05);
   h2->GetXaxis()->SetTitle("#phi-meson rapidity");
   h2->GetYaxis()->SetTitle("Eff. Slope a_{2}");
   h2->Draw();
-  drawLine(0.0, 0.0, 1.2, 0.0, 2, 8, 1);
+  drawLine(0.0, 0.0, 1.0, 0.0, 2, 8, 1);
 
   TGraphErrors *gr[NV2];
   const Int_t markerStyle[NV2] = {24, 20, 21, 22};
@@ -99,25 +100,25 @@ void a2_y(const Double_t sigY = 9.9)
     gr[i]->Draw("p");
   }
 
-  TLegend *leg = new TLegend(0.66, 0.24, 0.9, 0.54);
+  TLegend *leg = new TLegend(0.26, 0.24, 0.5, 0.54);
   leg->SetTextSize(0.05);
   for(int i=0;i<NV2;i++) {
     leg->AddEntry(gr[i], Form(" v_{2} = %3.1f", v2[i]));
   }
   leg->Draw();
-  drawHistBox(0., 1.2, -0.1, 0.01);
+  drawHistBox(0., 1.0, -0.3, 0.05);
   c2->Update();
 
-  c2->SaveAs(Form("fig/a2_y_Y_%3.1f.pdf", sigY));
-  c2->SaveAs(Form("fig/a2_y_Y_%3.1f.png", sigY));
+  c2->SaveAs(Form("fig/a2_dy_Y_%3.1f.pdf", sigY));
+  c2->SaveAs(Form("fig/a2_dy_Y_%3.1f.png", sigY));
   
   TCanvas *c3 = new TCanvas("c3","",800,0,800,600);
   c3->Draw();
-  TH2D *h3 = new TH2D("h3","",1,0.0,1.2,1,-0.01, 0.04);
+  TH2D *h3 = new TH2D("h3","",1,0.0,1.0,1,-0.02, 0.1);
   h3->GetXaxis()->SetTitle("#phi-meson rapidity");
   h3->GetYaxis()->SetTitle("Corretion #equiv -4/3*a_{2}*v_{2}");
   h3->Draw();
-  drawLine(0.0, 0.0, 1.2, 0.0, 2, 8, 1);
+  drawLine(0.0, 0.0, 1.0, 0.0, 2, 8, 1);
 
   TGraphErrors *gr_drho[NV2];
   for(int i=0;i<NV2;i++) {
@@ -128,16 +129,16 @@ void a2_y(const Double_t sigY = 9.9)
     gr_drho[i]->SetLineWidth(2);
     gr_drho[i]->Draw("p");
   }
-  leg = new TLegend(0.66, 0.64, 0.9, 0.94);
+  leg = new TLegend(0.26, 0.64, 0.5, 0.94);
   leg->SetTextSize(0.05);
   for(int i=NV2-1;i>=0;i--) {
     leg->AddEntry(gr[i], Form(" v_{2} = %3.1f", v2[i]));
   }
   leg->Draw();
-  drawHistBox(0., 1.2, -0.01, 0.04);
+  drawHistBox(0., 1.0, -0.02, 0.1);
   c3->Update();
 
-  TFile *fout = new TFile(Form("root/drho_a2_y_Y_%3.1f.root", sigY),"recreate");
+  TFile *fout = new TFile(Form("root/drho_a2_dy_Y_%3.1f.root", sigY),"recreate");
   for(int i=0;i<NV2;i++) {
     gr[i]->Write();
     gr_drho[i]->Write();
@@ -147,8 +148,8 @@ void a2_y(const Double_t sigY = 9.9)
   }
   fout->Close();
 
-  c3->SaveAs(Form("fig/drho_a2_y_Y_%3.1f.pdf", sigY));
-  c3->SaveAs(Form("fig/drho_a2_y_Y_%3.1f.png", sigY));
+  c3->SaveAs(Form("fig/drho_a2_dy_Y_%3.1f.pdf", sigY));
+  c3->SaveAs(Form("fig/drho_a2_dy_Y_%3.1f.png", sigY));
 
   /*
   TH1D *fMc = ((TH2D *)fin->Get("hPtCosTheta"))->ProjectionY("Mc",i1,i2);

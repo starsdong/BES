@@ -7,7 +7,7 @@
 #include "style.C+"
 #include "draw.C+"
 
-void makeRho00Comp_y(const Int_t Iv2 = 2)
+void makeRho00Comp_dy(const Int_t Iv2 = 2)
 {
   style();
   
@@ -18,12 +18,13 @@ void makeRho00Comp_y(const Int_t Iv2 = 2)
   const Char_t *HistName[NF] = {"drho00_Cos2PhiRP_Rc", "drho00_CosTheta2_Rc", "rho00_CosThetaBin"};
   const Char_t *LabelName[NF] = {"-4/3*<cos[2(#phi*-#Psi)]>", "5/2*(<cos^{2}#theta*>-1/3)", "cos#theta* fit"};
   const Int_t NY = 10;
-  const Double_t rap[NY] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+  //  const Double_t rap[NY] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+  const Double_t rap[NY] = {0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95};
   
   TFile *fin[NF];
   TGraphErrors *gr[NF][NV2];
   for(int i=0;i<NF;i++) {
-    fin[i] = new TFile(Form("root/%s_y_Y_9.9.root", FileName[i]));
+    fin[i] = new TFile(Form("root/%s_dy_Y_9.9.root", FileName[i]));
     for(int j=0;j<NV2;j++) {
       gr[i][j] = (TGraphErrors *)fin[i]->Get(Form("%s_%d",HistName[i],j));
     }
@@ -31,11 +32,11 @@ void makeRho00Comp_y(const Int_t Iv2 = 2)
 
   TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->Draw();
-  TH2D *h2 = new TH2D("h2","",1,0.0,1.2,1,-0.01, 0.02);
+  TH2D *h2 = new TH2D("h2","",1,0.0,1.0,1,-0.03, 0.15);
   h2->GetXaxis()->SetTitle("#phi-meson rapidity");
   h2->GetYaxis()->SetTitle("#Delta#rho_{00} Raw");  
   h2->Draw();
-  drawLine(0.0, 0.0, 1.2, 0.0, 2, 8, 1);
+  drawLine(0.0, 0.0, 1.0, 0.0, 2, 8, 1);
 
   const Int_t markerStyle[NV2] = {24, 21, 20, 22};
   const Int_t markerColor[NF] = {1, 2, 4};
@@ -66,14 +67,14 @@ void makeRho00Comp_y(const Int_t Iv2 = 2)
   }
   leg->Draw();
 
-  drawText(0.05, 0.017, "v_{2} = 0    0.2", 42, 0.045);
-  drawLine(0.19, 0.007, 0.19, 0.018, 1, 2);
-  drawLine(0.1, 0.0165, 0.28, 0.0165, 1, 2);
+  drawText(0.04, 0.135, "v_{2} = 0    0.2", 42, 0.045);
+  drawLine(0.16, 0.07, 0.16, 0.14, 1, 2);
+  drawLine(0.1, 0.13, 0.25, 0.13, 1, 2);
   
-  drawHistBox(0.0, 1.2, -0.01, 0.02);
+  drawHistBox(0.0, 1.0, -0.03, 0.15);
   c2->Update();
-  c2->SaveAs(Form("fig/drho00Comp_y_%d.png", Iv2));
-  c2->SaveAs(Form("fig/drho00Comp_y_%d.pdf", Iv2));
+  c2->SaveAs(Form("fig/drho00Comp_dy_%d.png", Iv2));
+  c2->SaveAs(Form("fig/drho00Comp_dy_%d.pdf", Iv2));
 
 
   // Acceptance corrected for v2=0 case
@@ -95,11 +96,11 @@ void makeRho00Comp_y(const Int_t Iv2 = 2)
   
   TCanvas *c3 = new TCanvas("c3","",800,0,800,600);
   c3->Draw();
-  TH2D *h3 = new TH2D("h3","",1,0.0,1.2,1,-0.005, 0.025);
+  TH2D *h3 = new TH2D("h3","",1,0.0,1.0,1,-0.03, 0.12);
   h3->GetXaxis()->SetTitle("#phi-meson rapidity");
   h3->GetYaxis()->SetTitle("#Delta#rho_{00}");  
   h3->Draw();
-  drawLine(0.0, 0.0, 1.2, 0.0, 2, 8, 1);
+  drawLine(0.0, 0.0, 1.0, 0.0, 2, 8, 1);
 
   for(int i=0;i<NF;i++) {
     for(int j=0;j<NV2;j++) {
@@ -110,7 +111,7 @@ void makeRho00Comp_y(const Int_t Iv2 = 2)
 
   // apply -4/3*a2*v2 correction
   double r_corr0[NF][NV2][NY], re_corr0[NF][NV2][NY];
-  TFile *fCorr = new TFile(Form("root/drho_a2_y_Y_9.9.root"));
+  TFile *fCorr = new TFile(Form("root/drho_a2_dy_Y_9.9.root"));
   TGraphErrors *gr_drho[NV2];
   for(int i=0;i<NV2;i++) {
     gr_drho[i] = (TGraphErrors *)fCorr->Get(Form("drho_%d",i));
@@ -157,18 +158,18 @@ void makeRho00Comp_y(const Int_t Iv2 = 2)
   }
   leg->Draw();
 
-  drawText(0.08, 0.022, "Obs.  Corr.", 42, 0.045);
-  drawLine(0.19, 0.012, 0.19, 0.023, 1, 2);
-  drawLine(0.1, 0.0215, 0.28, 0.0215, 1, 2);
+  drawText(0.07, 0.105, "Obs.  Corr.", 42, 0.045);
+  drawLine(0.16, 0.05, 0.16, 0.11, 1, 2);
+  drawLine(0.1, 0.102, 0.28, 0.102, 1, 2);
 
   
-  drawText(0.75, 0.022, "Obs. = Raw^{v_{2}=0.2} - Raw^{v_{2}=0}", 42, 0.035);
-  drawText(0.75, 0.020, "Corr. = Obs. + 4/3a_{2}v_{2}", 42, 0.035);
+  drawText(0.65, 0.105, "Obs. = Raw^{v_{2}=0.2} - Raw^{v_{2}=0}", 42, 0.035);
+  drawText(0.65, 0.095, "Corr. = Obs. + 4/3a_{2}v_{2}", 42, 0.035);
   
-  drawHistBox(0.0, 1.2, -0.005, 0.025);
+  drawHistBox(0.0, 1.0, -0.03, 0.12);
   c3->Update();
-  c3->SaveAs(Form("fig/drho00CorrComp_y_%d.png", Iv2));
-  c3->SaveAs(Form("fig/drho00CorrComp_y_%d.pdf", Iv2));
+  c3->SaveAs(Form("fig/drho00CorrComp_dy_%d.png", Iv2));
+  c3->SaveAs(Form("fig/drho00CorrComp_dy_%d.pdf", Iv2));
 
 
 }

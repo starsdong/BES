@@ -31,7 +31,7 @@ void makeRho00Comp(const Int_t Iv2 = 2)
 
   TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->Draw();
-  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.01, 0.04);
+  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.02, 0.04);
   h2->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
   h2->GetYaxis()->SetTitle("#Delta#rho_{00} Raw");  
   h2->Draw();
@@ -67,10 +67,10 @@ void makeRho00Comp(const Int_t Iv2 = 2)
   leg->Draw();
 
   drawText(2.4, 0.035, "v_{2} =  0   0.2", 42, 0.045);
-  drawLine(3.0, 0.02, 3.0, 0.035, 1, 2);
-  drawLine(2.6, 0.034, 3.4, 0.034, 1, 2);
+  drawLine(3.0, 0.015, 3.0, 0.038, 1, 2);
+  drawLine(2.6, 0.033, 3.4, 0.033, 1, 2);
   
-  drawHistBox(0.0, 5.0, -0.01, 0.04);
+  drawHistBox(0.0, 5.0, -0.02, 0.04);
   c2->Update();
   c2->SaveAs(Form("fig/drho00Comp_%d.png", Iv2));
   c2->SaveAs(Form("fig/drho00Comp_%d.pdf", Iv2));
@@ -95,7 +95,7 @@ void makeRho00Comp(const Int_t Iv2 = 2)
   
   TCanvas *c3 = new TCanvas("c3","",800,0,800,600);
   c3->Draw();
-  TH2D *h3 = new TH2D("h3","",1,0.0,5.0,1,-0.01, 0.04);
+  TH2D *h3 = new TH2D("h3","",1,0.0,5.0,1,-0.02, 0.04);
   h3->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
   h3->GetYaxis()->SetTitle("#Delta#rho_{00}");  
   h3->Draw();
@@ -141,7 +141,7 @@ void makeRho00Comp(const Int_t Iv2 = 2)
     }
   }
   
-  leg = new TLegend(0.6, 0.64, 0.85, 0.88);
+  leg = new TLegend(0.45, 0.67, 0.7, 0.88);
   leg->SetTextSize(0.035);
   leg->SetLineColor(10);
   for(int i=0;i<NF;i++) {
@@ -149,7 +149,7 @@ void makeRho00Comp(const Int_t Iv2 = 2)
   }
   leg->Draw();
 
-  leg = new TLegend(0.65, 0.64, 0.9, 0.88);
+  leg = new TLegend(0.5, 0.67, 0.75, 0.88);
   leg->SetTextSize(0.035);
   leg->SetLineColor(10);
   for(int i=0;i<NF;i++) {
@@ -157,14 +157,14 @@ void makeRho00Comp(const Int_t Iv2 = 2)
   }
   leg->Draw();
 
-  drawText(2.6, 0.035, "Obs.  Corr.", 42, 0.04);
-  drawLine(3.0, 0.02, 3.0, 0.035, 1, 2);
-  drawLine(2.6, 0.034, 3.4, 0.034, 1, 2);
+  drawText(1.65, 0.035, "Obs.  Corr.", 42, 0.04);
+  drawLine(2.05, 0.018, 2.05, 0.038, 1, 2);
+  drawLine(1.8, 0.034, 2.6, 0.034, 1, 2);
 
-  drawText(0.2, 0.035, "Obs. = Raw^{v_{2}=0.2} - Raw^{v_{2}=0}", 42, 0.035);
-  drawText(0.2, 0.031, "Corr. = Obs. + 4/3a_{2}v_{2}", 42, 0.035);
+  drawText(1.5, -0.012, "Obs. = Raw^{v_{2}=0.2} - Raw^{v_{2}=0}", 42, 0.035);
+  drawText(1.5, -0.017, "Corr. = Obs. + 4/3a_{2}v_{2}", 42, 0.035);
   
-  drawHistBox(0.0, 5.0, -0.01, 0.04);
+  drawHistBox(0.0, 5.0, -0.02, 0.04);
   c3->Update();
   c3->SaveAs(Form("fig/drho00CorrComp_%d.png", Iv2));
   c3->SaveAs(Form("fig/drho00CorrComp_%d.pdf", Iv2));
