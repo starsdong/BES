@@ -11,6 +11,10 @@ A) accept_Sergei.C:
      5) rho00_AccCorr.C - applying experiment efficiency correction (v2=0 case)
      6) makeRho00Comp.C - compare three different calculations (2,3/5,4/5 above) 
 
+   Analysis macros with xxx_y.C  - accumulative rapdity dependence
+   Analysis macros with xxx_dy.C - differential rapdiity dependence
+
 B) accept_Sergei_v2pt.C:
     (unfinished) taking realistic v2(pT) distribution
+
          
