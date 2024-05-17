@@ -60,6 +60,20 @@ void excess_v1(const Int_t conf = 1)
   gr_bes1_stat->RemovePoint(NP1-2);
   TGraphErrors *gr_bes1_sys = new TGraphErrors(NP1, bes1_energy, bes1val_excess_p, 0, bes1syserr_excess_p);
   gr_bes1_sys->RemovePoint(NP1-2);
+
+
+  Double_t bes1val_pbar[NP1];
+  Double_t bes1staerr_pbar[NP1];
+  Double_t bes1syserr_pbar[NP1];
+  for(int i=0;i<NP1;i++) {
+    bes1val_pbar[i] = bes1val_pbarv1[i] * yb1[i];
+    bes1staerr_pbar[i] = bes1staerr_pbarv1[i] * yb1[i];
+    bes1syserr_pbar[i] = bes1syserr_pbarv1[i] * yb1[i];
+  }
+  TGraphErrors *gr_bes1_pbar_stat = new TGraphErrors(NP1, bes1_energy, bes1val_pbar, 0, bes1staerr_pbar);
+  gr_bes1_pbar_stat->RemovePoint(NP1-2);
+  TGraphErrors *gr_bes1_pbar_sys = new TGraphErrors(NP1, bes1_energy, bes1val_pbar, 0, bes1syserr_pbar);
+  gr_bes1_pbar_sys->RemovePoint(NP1-2);
   
 
    //////////////////////////////////////////////////////////////////////////////////////////////////////BES2
@@ -163,6 +177,8 @@ void excess_v1(const Int_t conf = 1)
   TGraphErrors *gr_bes2_stat = new TGraphErrors(NP2_emmy, bes2_energy_d, bes2val_excess_p, 0, bes2staerr_excess_p);
   TGraphErrors *gr_bes2_sys = new TGraphErrors(NP2_emmy, bes2_energy_d, bes2val_excess_p, 0, bes2syserr_excess_p);
   
+  TGraphErrors *gr_bes2_pbar_stat = new TGraphErrors(NP2_emmy, bes2_energy_d, bes2val_pbarv1, 0, bes2staerr_pbarv1);
+  TGraphErrors *gr_bes2_pbar_sys = new TGraphErrors(NP2_emmy, bes2_energy_d, bes2val_pbarv1, 0, bes2syserr_pbarv1);
   
   // TGraphErrors *gr_bes2_diff = new TGraphErrors(NP2, bes2_energy_d,v1_difference,0, v1_difference_error);
 
@@ -195,6 +211,7 @@ void excess_v1(const Int_t conf = 1)
   const Char_t *GraphName[NM] = {"momdep_hard_K380MeV", "momdep_soft_K210MeV", "hard_K380MeV", "soft_K210MeV"};
   const Char_t *LabelName[NM] = {"p-dep #kappa = 380 MeV", "p-dep #kappa = 210 MeV", "#kappa = 380 MeV", "#kappa = 210 MeV"};
   TGraphErrors *gr_m[NM], *gr_m_tmp[NM];
+  TGraphErrors *gr_m_pbar[NM], *gr_m_pbar_tmp[NM];
   Double_t model_energy[NM][NEMax], model_v1[NM][NEMax];
   for(int i=0;i<NM;i++) {
     // gr_m_tmp[i] = (TGraph *)fin1->Get(GraphName[i]);
@@ -206,6 +223,7 @@ void excess_v1(const Int_t conf = 1)
     // }
     // gr_m[i] = new TGraph(gr_m_tmp[i]->GetN(), model_energy[i], model_v1[i]);
     gr_m[i] = (TGraphErrors *)fin1->Get(Form("g_proton_excessv1_slopevsyoverybeam_1040_%s", GraphName[i]));
+    gr_m_pbar[i] = (TGraphErrors *)fin1->Get(Form("g_antiproton_v1_slopevsyoverybeam_1040_%s", GraphName[i]));
     //    gr_m[i] = new TGraph(gr_m_tmp[i]->GetN(), gr_m_tmp[i]->GetX(), gr_m_tmp[i]->GetY());
   }
 
@@ -315,5 +333,96 @@ void excess_v1(const Int_t conf = 1)
   c1->Update();
   c1->SaveAs(Form("excess_v1_%d.pdf",conf));  
   c1->SaveAs(Form("excess_v1_%d.png",conf));
+
+  ///////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  TCanvas *c2 = new TCanvas("c2","c2",800, 0, 800,600);
+  c2->cd()->SetLogx();
+  //  c2->cd()->SetLogy();
+
+  y1 = -0.39;
+  y2 = 0.;
+  //  if(conf) y2 = 0.7;
+  TH1D *h1 = new TH1D("h1","",1,x1,x2);
+  h1->GetXaxis()->CenterTitle();
+  h1->SetXTitle("Collision Energy #sqrt{s_{NN}} (GeV)");
+  h1->GetXaxis()->SetLabelOffset(999.);
+  h1->GetXaxis()->SetLabelSize(0.5);
+  h1->GetXaxis()->SetTitleSize(0.065);
+  h1->GetXaxis()->SetTitleOffset(1.2);
+  h1->SetYTitle("dv_{1}^{#bar{p}}/d(y/y_{beam})");
+  h1->GetYaxis()->SetTitleSize(0.065);
+  h1->GetYaxis()->SetTitleOffset(1.1);
+  h1->GetYaxis()->CenterTitle();
+  h1->GetYaxis()->SetNdivisions(104);
+  h1->GetYaxis()->SetLabelSize(0.045);
+  h1->GetYaxis()->SetLabelOffset(0.01);
+  h1->SetMaximum(y2);
+  h1->SetMinimum(y1);
+  h1->Draw("c");
+
+  drawLine(x1*1.0, 0.095, x2*1.0, 0.095, 2, 8, 1);
+  if(include_model)
+  {
+	  for(int i=0;i<NM;i++) {
+	    setGraphLine(gr_m_pbar[i], m_lineStyle[i], m_fillColor[i], 2);
+	    setGraphFill(gr_m_pbar[i], m_fillStyle[i], m_fillColor[i], 0.5);
+	    if(conf) gr_m_pbar[i]->Draw("e3");
+	  }
+  }
+
+  setGraphMarker(gr_bes1_pbar_stat, 24, 1, 1.5);
+  setGraphLine(gr_bes1_pbar_stat, 1, 1, 2);
+  gr_bes1_pbar_stat->Draw("p");
+  
+  setGraphMarker(gr_bes2_pbar_sys, 20, 2, 1.5);
+  setGraphLine(gr_bes2_pbar_sys, 1, 2, 2);
+  drawSysBox(gr_bes2_pbar_sys, 0.05, 16, 1);
+
+  setGraphMarker(gr_bes2_pbar_stat, 20, 2, 1.8);
+  setGraphLine(gr_bes2_pbar_stat, 1, 2, 2);
+  gr_bes2_pbar_stat->Draw("p");
+  
+  
+  // gr_bes2_diff->SetName("difference");gr_bes2_diff->SetTitle("difference");
+  // gr_bes2_diff->Draw("p");
+
+  //  gr_bes2_stat->Fit("pol0","R","",10.,100.);
+  
+  drawHistBox(x1,x2,y1,y2);
+  // drawText(9.0, -0.06*(y2-y1)+y1, "10");
+  // drawText(86, -0.06*(y2-y1)+y1, "100");
+  drawText(9.0, -0.42, "10");
+  drawText(28,  -0.42, "30");
+  drawText(86,  -0.42, "100");
+
+  //  drawText(30, y2*0.83, "Excess Flow of Protons", 32, 0.06);
+  drawText(50, y1*0.4, "Au+Au 10-40%", 42, 0.05);
+  
+  leg = new TLegend(0.7, 0.49, 0.92, 0.62);
+  leg->SetLineColor(10);
+  leg->SetTextSize(0.04);
+  leg->AddEntry(gr_bes2_pbar_stat, "  BES-II", "pl");
+  leg->AddEntry(gr_bes1_pbar_stat, "  BES-I", "pl");
+  leg->Draw();
+  if(include_model)
+  {
+	  leg = new TLegend(0.68, 0.48-0.06*NM, 0.92, 0.48);
+	  leg->SetLineColor(10);
+	  leg->SetTextSize(0.035);
+	  for(int i=0;i<NM;i++) {
+		leg->AddEntry(gr_m[i], LabelName[i], "f");
+	  }
+	  if(conf) leg->Draw();
+  }
+  
+  drawText(35, -0.21, "STAR");
+  drawText(35, -0.31, "JAM2");
+
+  
+  c2->Update();
+  c2->SaveAs(Form("pbar_v1_%d.pdf",conf));  
+  c2->SaveAs(Form("pbar_v1_%d.png",conf));
   
 }
