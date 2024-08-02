@@ -351,7 +351,7 @@ void plotRatioOneMuB(const int conf = 1)  // conf:  1 - combine model uncertaint
 
   drawText(770, 1.1, "-0.5<y<0", 42, 0.03,90);
   
-  TLegend *leg = new TLegend(0.74, 0.76, 0.96, 0.92);
+  TLegend *leg = new TLegend(0.74, 0.77, 0.96, 0.93);
   leg->SetLineColor(10);
   leg->SetTextSize(0.035);
   for(int im=n_model-1;im>=0;im--) {
