@@ -208,15 +208,15 @@ void plotRatioOneMuB(const int conf = 1)  // conf:  1 - combine model uncertaint
   d0->SetMaximum(y2);
   d0->GetXaxis()->CenterTitle();
   d0->GetXaxis()->SetTitle("Baryon Chemical Potential #mu_{B} (MeV)");
-  d0->GetXaxis()->SetLabelOffset(0.01);
+  d0->GetXaxis()->SetLabelOffset(0.008);
   d0->GetXaxis()->SetLabelSize(0.05);  
   d0->GetXaxis()->SetTitleOffset(1.2);  
   d0->GetXaxis()->SetTitleSize(0.065);  
   d0->GetYaxis()->SetNdivisions(205);  
   d0->GetYaxis()->SetTitle("R_{42}^{data} / R_{42}^{model}");  
-  d0->GetYaxis()->SetTitleOffset(1.2);  
+  d0->GetYaxis()->SetTitleOffset(1.1);  
   d0->GetYaxis()->SetTitleSize(0.065);  
-  d0->GetYaxis()->SetLabelOffset(0.02);
+  d0->GetYaxis()->SetLabelOffset(0.01);
   d0->GetYaxis()->SetLabelSize(0.05);
   d0->Draw("c");
 
