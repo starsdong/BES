@@ -326,8 +326,8 @@ void plotRatioOneMuB(const int conf = 1)  // conf:  1 - combine model uncertaint
       setGraphLine(gr_r_fxt[im], 1, markerColor[im]);
       gr_r_fxt[im]->Draw("p");
 
-      drawText(50, 1.95, "Au+Au 0-5%", 42, 0.05);
-      drawText(40, 1.8, "0.4<p_{T}<2.0 GeV/c, |y|<0.5", 42, 0.03);
+      drawText(50, 2.0, "Au+Au 0-5%", 42, 0.05);
+      drawText(40, 1.85, "0.4<p_{T}<2.0 GeV/c, |y|<0.5", 42, 0.03);
     }
     
     
