@@ -253,7 +253,7 @@ void plotRatioOneMuB(const int conf = 1)  // conf:  1 - combine model uncertaint
   for(int i=0;i<np;i++) {
     ener_p[i] = (11.5 - 2.0)/np*(i+0.1) + 2.0;
     muB_p[i] = fun_muB->Eval(ener_p[i]);
-    y_p[i] = fun_p->Eval(ener_p[i]);
+    y_p[i] = (fun_p->Eval(ener_p[i]) - 1 ) * 0.65 + 1.;
     
     ener_n[i] = (200 - 11.5)/np*(i+0.1) + 11.5;
     muB_n[i] = fun_muB->Eval(ener_n[i]);
