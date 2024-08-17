@@ -248,12 +248,13 @@ void plotRatioOneMuB(const int conf = 1)  // conf:  1 - combine model uncertaint
   //  fun_n->Draw("same");
 
   const Int_t np = 100;
-  double ener_p[np], muB_p[np], y_p[np];
+  double ener_p[np], muB_p[np], y_p[np], y_p1[np];
   double ener_n[np], muB_n[np], y_n[np];
   for(int i=0;i<np;i++) {
     ener_p[i] = (11.5 - 2.0)/np*(i+0.1) + 2.0;
     muB_p[i] = fun_muB->Eval(ener_p[i]);
-    y_p[i] = (fun_p->Eval(ener_p[i]) - 1 ) * 0.65 + 1.;
+    y_p[i] = fun_p->Eval(ener_p[i]);
+    y_p1[i] = (fun_p->Eval(ener_p[i]) - 1 ) * 0.5 + 1.;
     
     ener_n[i] = (200 - 11.5)/np*(i+0.1) + 11.5;
     muB_n[i] = fun_muB->Eval(ener_n[i]);
@@ -266,6 +267,12 @@ void plotRatioOneMuB(const int conf = 1)  // conf:  1 - combine model uncertaint
   gr_p->SetLineStyle(9);
   gr_p->Draw("c");
   
+  TGraph *gr_p1 = new TGraph(np, muB_p, y_p1);
+  gr_p1->SetLineColor(kGray);
+  gr_p1->SetLineWidth(6);
+  gr_p1->SetLineStyle(9);
+  gr_p1->Draw("c");
+
   TGraph *gr_n = new TGraph(np, muB_n, y_n);
   gr_n->SetLineColor(kRed);
   gr_n->SetLineWidth(6);
