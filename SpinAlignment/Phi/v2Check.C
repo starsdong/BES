@@ -52,6 +52,8 @@ void v2Check(const Double_t sigY = 9.9)
   TCanvas *c2 = new TCanvas("c2","");
   c2->Draw();
   TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.05, 0.3);
+  h2->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
+  h2->GetYaxis()->SetTitle("v_2");  
   h2->Draw();
   drawLine(0.0, 0.0, 5.0, 0.0, 2, 8, 1);
 

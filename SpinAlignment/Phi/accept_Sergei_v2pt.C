@@ -54,12 +54,19 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   //-------------------
   TH2D *hPtY = new TH2D("hPtY","",200,0.,10.,200,-2.,2.);
   TH2D *hPtEta = new TH2D("hPtEta","",200,0.,10.,200,-2.,2.);
-  TH2D *hPtV2 = new TH2D("hPtV2","",200,0.,10.,200,-1.,1.);
+  TH2D *hPtV2 = new TH2D("hPtV2","",200,0.,10.,200,-1.,1.);  
   TH2D *hPtCosTheta = new TH2D("hPtCosTheta","",200,0.,10.,2000,-1.,1.);
   TH2D *hCosThetaDiff = new TH2D("hCosThetaDiff","",200,-1.,1.,200,-0.01,0.01);
   TH2D *hPtCos2Phi = new TH2D("hPtCos2Phi","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCos2PhiRP = new TH2D("hPtCos2PhiRP","",200,0.,10.,2000,-1.,1.); // delta_rho00 = -4/3 * <cos(2*(phi*-Psi_RP))> - alternative calculation
   TH2D *hPtCosTheta2 = new TH2D("hPtCosTheta2","",200,0.,10.,1000,0.,1.);
+  
+  // rapidity dependence, 1.2<pT<5.4
+  TH2D *hYCosTheta = new TH2D("hYCosTheta","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2Phi = new TH2D("hYCos2Phi","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRP = new TH2D("hYCos2PhiRP","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCosTheta2 = new TH2D("hYCosTheta2","",20,0.,1.,1000,0.,1.);
+  TH2D *hYV2 = new TH2D("hYV2","",20,0.,1.,200,-1.,1.);
   
   //|eta|<0.9
   TH2D *hPtYRc = new TH2D("hPtYRc","",200,0.,10.0,200,-2.,2.);
@@ -70,6 +77,12 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   TH2D *hPtCos2PhiRPRc = new TH2D("hPtCos2PhiRPRc","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCosTheta2Rc = new TH2D("hPtCosTheta2Rc","",200,0.,10.,1000,0.,1.);
 
+  TH2D *hYCosThetaRc = new TH2D("hYCosThetaRc","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRc = new TH2D("hYCos2PhiRc","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRPRc = new TH2D("hYCos2PhiRPRc","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCosTheta2Rc = new TH2D("hYCosTheta2Rc","",20,0.,1.,1000,0.,1.);
+  TH2D *hYV2Rc = new TH2D("hYV2Rc","",20,0.,1.,200,-1.,1.);
+
   //|eta|<0.9 pT>0.2
   TH2D *hPtYRc1 = new TH2D("hPtYRc1","",200,0.,10.0,200,-2.,2.);
   TH2D *hPtEtaRc1 = new TH2D("hPtEtaRc1","",200,0.,10.0,200,-2.,2.);
@@ -78,6 +91,12 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   TH2D *hPtCos2PhiRc1 = new TH2D("hPtCos2PhiRc1","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCos2PhiRPRc1 = new TH2D("hPtCos2PhiRPRc1","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCosTheta2Rc1 = new TH2D("hPtCosTheta2Rc1","",200,0.,10.,1000,0.,1.);
+
+  TH2D *hYCosThetaRc1 = new TH2D("hYCosThetaRc1","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRc1 = new TH2D("hYCos2PhiRc1","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRPRc1 = new TH2D("hYCos2PhiRPRc1","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCosTheta2Rc1 = new TH2D("hYCosTheta2Rc1","",20,0.,1.,1000,0.,1.);
+  TH2D *hYV2Rc1 = new TH2D("hYV2Rc1","",20,0.,1.,200,-1.,1.);
 
   TH2D *hPtPhiK1 = new TH2D("hPtPhiK1","",200,0.,10.0,200,0.,10.0);
   TH2D *hPtPhiK2 = new TH2D("hPtPhiK2","",200,0.,10.0,200,0.,10.0);
@@ -90,6 +109,12 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   TH2D *hPtCos2PhiRc2 = new TH2D("hPtCos2PhiRc2","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCos2PhiRPRc2 = new TH2D("hPtCos2PhiRPRc2","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCosTheta2Rc2 = new TH2D("hPtCosTheta2Rc2","",200,0.,10.,1000,0.,1.);
+  
+  TH2D *hYCosThetaRc2 = new TH2D("hYCosThetaRc2","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRc2 = new TH2D("hYCos2PhiRc2","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRPRc2 = new TH2D("hYCos2PhiRPRc2","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCosTheta2Rc2 = new TH2D("hYCosTheta2Rc2","",20,0.,1.,1000,0.,1.);
+  TH2D *hYV2Rc2 = new TH2D("hYV2Rc2","",20,0.,1.,200,-1.,1.);
 
   //|eta|<0.9 pT>0.2, - TPC & TOF effficiency
   TH2D *hPtYRc3 = new TH2D("hPtYRc3","",200,0.,10.0,200,-2.,2.);
@@ -100,6 +125,12 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   TH2D *hPtCos2PhiRPRc3 = new TH2D("hPtCos2PhiRPRc3","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCosTheta2Rc3 = new TH2D("hPtCosTheta2Rc3","",200,0.,10.,1000,0.,1.);
   
+  TH2D *hYCosThetaRc3 = new TH2D("hYCosThetaRc3","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRc3 = new TH2D("hYCos2PhiRc3","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRPRc3 = new TH2D("hYCos2PhiRPRc3","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCosTheta2Rc3 = new TH2D("hYCosTheta2Rc3","",20,0.,1.,1000,0.,1.);
+  TH2D *hYV2Rc3 = new TH2D("hYV2Rc3","",20,0.,1.,200,-1.,1.);
+
   //|eta|<0.9 pT>0.2, - TBD
   TH2D *hPtYRc4 = new TH2D("hPtYRc4","",200,0.,10.0,200,-2.,2.);
   TH2D *hPtEtaRc4 = new TH2D("hPtEtaRc4","",200,0.,10.0,200,-2.,2.);
@@ -108,6 +139,12 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   TH2D *hPtCos2PhiRc4 = new TH2D("hPtCos2PhiRc4","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCos2PhiRPRc4 = new TH2D("hPtCos2PhiRPRc4","",200,0.,10.,2000,-1.,1.);
   TH2D *hPtCosTheta2Rc4 = new TH2D("hPtCosTheta2Rc4","",200,0.,10.,1000,0.,1.);
+
+  TH2D *hYCosThetaRc4 = new TH2D("hYCosThetaRc4","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRc4 = new TH2D("hYCos2PhiRc4","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCos2PhiRPRc4 = new TH2D("hYCos2PhiRPRc4","",20,0.,1.,2000,-1.,1.);
+  TH2D *hYCosTheta2Rc4 = new TH2D("hYCosTheta2Rc4","",20,0.,1.,1000,0.,1.);
+  TH2D *hYV2Rc4 = new TH2D("hYV2Rc4","",20,0.,1.,200,-1.,1.);
 
   TLorentzVector Phimom(0.,0.,0.,0.);
   TLorentzVector K1mom(0.,0.,0.,0.);   // Kaon momentum in the lab frame
@@ -134,7 +171,8 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
     double v2 = (mT - MassMom) > 1.2 ? 0.2 :  0.2/1.2 * (mT - MassMom);
 
     double Psi_RP = gRandom->Rndm()*TMath::Pi()*2.0;
-    
+
+    fPhi->SetParameter(0, v2);
     double phi = fPhi->GetRandom() + Psi_RP;
     if(phi>TMath::Pi()*2.) phi -= TMath::Pi()*2.;
     
@@ -177,6 +215,14 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
       hPtCosTheta2->Fill(pT, costheta_rc*costheta_rc);
 
       hCosThetaDiff->Fill(costheta_pri, costheta_rc-costheta_pri);
+
+      if(pT>1.2 && pT<5.4) {
+	hYCosTheta->Fill(fabs(y), costheta_rc);
+	hYCos2Phi->Fill(fabs(y), cos2phi);
+	hYCos2PhiRP->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	hYCosTheta2->Fill(fabs(y), costheta_rc*costheta_rc);
+	hYV2->Fill(y, TMath::Cos(2.*(phi - Psi_RP)));
+      }
     }
 
     // Check the momentum
@@ -195,6 +241,14 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
 	hPtV2Rc->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	hPtCos2PhiRPRc->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
 	hPtCosTheta2Rc->Fill(pT, costheta_rc*costheta_rc);
+
+	if(pT>1.2 && pT<5.4) {
+	  hYCosThetaRc->Fill(fabs(y), costheta_rc);
+	  hYCos2PhiRc->Fill(fabs(y), cos2phi);
+	  hYCos2PhiRPRc->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	  hYCosTheta2Rc->Fill(fabs(y), costheta_rc*costheta_rc);
+	  hYV2Rc->Fill(y, TMath::Cos(2.*(phi - Psi_RP)));
+	}
       }
 
       if(K1mom.Pt()>0.2 && K2mom.Pt()>0.2) {
@@ -206,6 +260,14 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
 	  hPtV2Rc1->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	  hPtCos2PhiRPRc1->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
 	  hPtCosTheta2Rc1->Fill(pT, costheta_rc*costheta_rc);
+
+	  if(pT>1.2 && pT<5.4) {
+	    hYCosThetaRc1->Fill(fabs(y), costheta_rc);
+	    hYCos2PhiRc1->Fill(fabs(y), cos2phi);
+	    hYCos2PhiRPRc1->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	    hYCosTheta2Rc1->Fill(fabs(y), costheta_rc*costheta_rc);
+	    hYV2Rc1->Fill(y, TMath::Cos(2.*(phi - Psi_RP)));
+	  }
 	}
 	
 	hPtPhiK1->Fill(pT, K1mom.Pt());
@@ -221,6 +283,14 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
 	    hPtV2Rc2->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	    hPtCos2PhiRPRc2->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
 	    hPtCosTheta2Rc2->Fill(pT, costheta_rc*costheta_rc);
+
+	    if(pT>1.2 && pT<5.4) {
+	      hYCosThetaRc2->Fill(fabs(y), costheta_rc);
+	      hYCos2PhiRc2->Fill(fabs(y), cos2phi);
+	      hYCos2PhiRPRc2->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+	      hYCosTheta2Rc2->Fill(fabs(y), costheta_rc*costheta_rc);
+	      hYV2Rc2->Fill(y, TMath::Cos(2.*(phi - Psi_RP)));
+	    }
 	  }
 	  
 	  if(gRandom->Rndm()<gr_eff_tof->Eval(K1mom.Pt()) &&
@@ -233,6 +303,14 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
 	      hPtV2Rc3->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
 	      hPtCos2PhiRPRc3->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
 	      hPtCosTheta2Rc3->Fill(pT, costheta_rc*costheta_rc);
+
+	      if(pT>1.2 && pT<5.4) {
+		hYCosThetaRc3->Fill(fabs(y), costheta_rc);
+		hYCos2PhiRc3->Fill(fabs(y), cos2phi);
+		hYCos2PhiRPRc3->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+		hYCosTheta2Rc3->Fill(fabs(y), costheta_rc*costheta_rc);
+		hYV2Rc3->Fill(y, TMath::Cos(2.*(phi - Psi_RP)));
+	      }
 	    }
 	  }	  
 
@@ -251,6 +329,11 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   hPtV2->Write();
   hPtCos2PhiRP->Write();
   hPtCosTheta2->Write();
+  hYCosTheta->Write();
+  hYCos2Phi->Write();
+  hYCos2PhiRP->Write();
+  hYCosTheta2->Write();
+  hYV2->Write();
   
   hPtYRc->Write();
   hPtEtaRc->Write();
@@ -260,6 +343,11 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   hPtV2Rc->Write();
   hPtCos2PhiRPRc->Write();
   hPtCosTheta2Rc->Write();
+  hYCosThetaRc->Write();
+  hYCos2PhiRc->Write();
+  hYCos2PhiRPRc->Write();
+  hYCosTheta2Rc->Write();
+  hYV2Rc->Write();
   
   hPtYRc1->Write();
   hPtEtaRc1->Write();
@@ -268,6 +356,11 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   hPtV2Rc1->Write();
   hPtCos2PhiRPRc1->Write();
   hPtCosTheta2Rc1->Write();
+  hYCosThetaRc1->Write();
+  hYCos2PhiRc1->Write();
+  hYCos2PhiRPRc1->Write();
+  hYCosTheta2Rc1->Write();
+  hYV2Rc1->Write();
   
   hPtYRc2->Write();
   hPtEtaRc2->Write();
@@ -276,6 +369,11 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   hPtV2Rc2->Write();
   hPtCos2PhiRPRc2->Write();
   hPtCosTheta2Rc2->Write();
+  hYCosThetaRc2->Write();
+  hYCos2PhiRc2->Write();
+  hYCos2PhiRPRc2->Write();
+  hYCosTheta2Rc2->Write();
+  hYV2Rc2->Write();
 
   hPtYRc3->Write();
   hPtEtaRc3->Write();
@@ -284,6 +382,11 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   hPtV2Rc3->Write();
   hPtCos2PhiRPRc3->Write();
   hPtCosTheta2Rc3->Write();
+  hYCosThetaRc3->Write();
+  hYCos2PhiRc3->Write();
+  hYCos2PhiRPRc3->Write();
+  hYCosTheta2Rc3->Write();
+  hYV2Rc3->Write();
 
   hPtYRc4->Write();
   hPtEtaRc4->Write();
@@ -292,6 +395,11 @@ void accept_Sergei_v2pt(const Int_t Nevt = 100000000)
   hPtV2Rc4->Write();
   hPtCos2PhiRPRc4->Write();
   hPtCosTheta2Rc4->Write();
+  hYCosThetaRc4->Write();
+  hYCos2PhiRc4->Write();
+  hYCos2PhiRPRc4->Write();
+  hYCosTheta2Rc4->Write();
+  hYV2Rc4->Write();
 
   hPtPhiK1->Write();
   hPtPhiK2->Write();

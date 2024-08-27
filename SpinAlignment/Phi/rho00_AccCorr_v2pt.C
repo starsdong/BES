@@ -18,6 +18,7 @@ void rho00_AccCorr_v2pt()
   // const Double_t pT[NPt] = {0.9, 1.5, 2.1, 2.7, 3.6, 4.8};
   const Int_t NV2 = 2;
   const Char_t *v2Name[NV2] = {"v2_0.0_Y_9.9", "v2pt"};
+  const Char_t *v2Label[NV2] = {"v200", "v2pt"};
   const Int_t NMAX = 200;
   
   double_t r0[NV2][NPt], r0e[NV2][NPt];
@@ -79,9 +80,11 @@ void rho00_AccCorr_v2pt()
     }
   }
   
-  TCanvas *c2 = new TCanvas("c2","");
+  TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->Draw();
-  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.015,0.035);
+  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.02,0.04);
+  h2->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
+  h2->GetYaxis()->SetTitle("#Delta#rho_{00} (Accep. Corr.) from cos#theta* fit");  
   h2->Draw();
   drawLine(0.0, 0.0, 5.0, 0.0, 2, 8, 1);
 
@@ -107,13 +110,29 @@ void rho00_AccCorr_v2pt()
     gr_corr[i]->Draw("p");
   }
 
-  // gr[0]->SetFillColor(5);
-  // gr[0]->Draw("e3");
-
   for(int i=0;i<NV2;i++) {
     gr[i]->Draw("p");
     gr_corr[i]->Draw("p");	
   }
+
+  TLegend *leg = new TLegend(0.65, 0.64, 0.8, 0.88);
+  leg->SetTextSize(0.035);
+  leg->SetLineColor(10);
+  for(int i=NV2-1;i>=0;i--) {
+    leg->AddEntry(gr[i], Form("v_{2} = %s", v2Label[i]), "pl");
+  }
+  leg->Draw();
+  leg = new TLegend(0.8, 0.64, 0.95, 0.88);
+  leg->SetTextSize(0.035);
+  leg->SetLineColor(10);
+  for(int i=NV2-1;i>=0;i--) {
+    leg->AddEntry(gr_corr[i], Form("v_{2} = %s", v2Label[i]), "pl");
+  }
+  leg->Draw();
+  drawText(3.2, 0.035, "RC", 42, 0.05, 0, 2);
+  drawText(4.0, 0.035, "RC corr.", 42, 0.05, 0, 4);
+  drawHistBox(0., 5.0, -0.02, 0.04);
+  
   c2->Update();
 
   c2->SaveAs(Form("fig/rho00_AccCorr_pT_v2pt.pdf"));
