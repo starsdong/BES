@@ -15,6 +15,9 @@ A) accept_Sergei.C:
    Analysis macros with xxx_dy.C - differential rapdiity dependence
 
 B) accept_Sergei_v2pt.C:
-    (unfinished) taking realistic v2(pT) distribution
+   realistic v2(pT) input for phi meson: mT scaling, linear increase from 0.2 - 1.2 in mT-m0, satuated v2 = 0.2
+
+   all analysis macros following the same naming scheme as in A) with _v2pt.C in the end. All output fig and root files are with _v2pt in the filenames
+
 
          
