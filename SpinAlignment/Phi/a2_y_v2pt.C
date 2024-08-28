@@ -24,7 +24,14 @@ void a2_y_v2pt()
   const Int_t NV2 = 2;
   const Char_t *v2Name[NV2] = {"v2_0.0_Y_9.9", "v2pt"};
   const Char_t *v2Label[NV2] = {"v200", "v2pt"};
-  const Double_t sc = -4./3.;  
+  const Double_t sc = -4./3.;
+
+  TGraphErrors *gr_v2_y[NV2];
+  TFile *finv2 = new TFile("root/v2_pT_v2pt.root");
+  for(int i=0;i<NV2;i++) {
+    gr_v2_y[i] = (TGraphErrors *)finv2->Get(Form("v2_y_%d",i));
+  }
+  finv2->Close();
 
   double_t a2[NV2][NY], a2e[NV2][NY];
   double_t drho[NV2][NY], drhoe[NV2][NY];
@@ -68,13 +75,13 @@ void a2_y_v2pt()
       a2[iv2][i] = funA2->GetParameter(0);
       a2e[iv2][i] = funA2->GetParError(0);
 
-      drawText(-0.4, eff[0]/0.7*0.9, Form("v_{2} = %3.1f", v2[iv2]), 42, 0.08);
+      drawText(-0.4, eff[0]/0.7*0.9, Form("v_{2} = %3.1f", gr_v2_y[iv2]->GetY()[i]), 42, 0.08);
       drawText(-0.4, eff[0]/0.7*0.8, Form("|y| < %3.1f", rap[i]), 42, 0.08);
       drawText(-0.4, eff[0]*0.15, Form("a_{2} = %7.4f", a2[iv2][i]), 42, 0.08);
       
 
-      drho[iv2][i] = sc * a2[iv2][i] * v2[iv2];
-      drhoe[iv2][i] = sc * a2e[iv2][i] * v2[iv2];
+      drho[iv2][i] = sc * a2[iv2][i] * gr_v2_y[iv2]->GetY()[0]; // gr_v2_y[iv2]->GetY()[i]; acceptance change at high rapidity bin
+      drhoe[iv2][i] = sc * a2e[iv2][i] * gr_v2_y[iv2]->GetY()[0];
       c1->Update();
     }
     //    fin[iv2]->Close();

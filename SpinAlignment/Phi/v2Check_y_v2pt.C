@@ -11,7 +11,6 @@ void v2Check_y_v2pt()
 
   // const Float_t i1 = 25;
   // const Float_t i2 = 48;  // 1.2 - 2.4 GeV/c
-  const Int_t NMAX = 200; // number of cos2phi bins
 
   const Int_t NY = 10;
   const Int_t i_edge[NY] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
@@ -29,14 +28,15 @@ void v2Check_y_v2pt()
   //  TFile *fin = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root",v2, sigY));
   TFile *fin[NV2];
   for(int iv2 = 0;iv2<NV2;iv2++) {
+    if(iv2==0) continue;
     fin[iv2] = new TFile(Form("accept_Sergei_%s.root", v2Name[iv2]));
     //    fin[iv2] = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root", v2Name[iv2], sigY));
     TH1D *fMc[NV2][NY], *fRc[NV2][NY];
     TGraphErrors *gr_e[NV2][NY];
     for(int i=0;i<NY;i++) {
       c1->cd(i+1+iv2*NY);
-      fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hPtV2"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
-      fRc[iv2][i] = ((TH2D *)fin[iv2]->Get("hPtV2Rc3"))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
+      fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYV2"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
+      fRc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYV2Rc3"))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
 
 
       TH1D *h0 = new TH1D("h0","",1,-1,1);
@@ -59,16 +59,16 @@ void v2Check_y_v2pt()
 
   TCanvas *c2 = new TCanvas("c2","");
   c2->Draw();
-  TH2D *h2 = new TH2D("h2","",1,0.0,5.0,1,-0.05, 0.3);
-  h2->GetXaxis()->SetTitle("#phi-meson p_{T} (GeV/c)");
-  h2->GetYaxis()->SetTitle("v_2");  
+  TH2D *h2 = new TH2D("h2","",1,0.0,1.0,1,-0.05, 0.3);
+  h2->GetXaxis()->SetTitle("#phi-meson Rapidity");
+  h2->GetYaxis()->SetTitle("v_{2}");  
   h2->Draw();
   drawLine(0.0, 0.0, 5.0, 0.0, 2, 8, 1);
 
   TGraphErrors *gr[NV2];
   const Int_t markerStyle[NV2] = {24, 20};
   for(int i=0;i<NV2;i++) {
-    gr[i] = new TGraphErrors(NY, pT, v2[i], 0, v2e[i]);
+    gr[i] = new TGraphErrors(NY, rap, v2[i], 0, v2e[i]);
     gr[i]->SetMarkerStyle(markerStyle[i]);
     gr[i]->SetMarkerSize(2.0);
     gr[i]->SetLineWidth(2);
@@ -77,7 +77,8 @@ void v2Check_y_v2pt()
 
   TGraphErrors *gr_rc[NV2];
   for(int i=0;i<NV2;i++) {
-    gr_rc[i] = new TGraphErrors(NY, pT1, v2Rc[i], 0, v2eRc[i]);
+    gr_rc[i] = new TGraphErrors(NY, rap, v2Rc[i], 0, v2eRc[i]);
+    gr_rc[i]->SetName(Form("v2_y_%d",i));
     gr_rc[i]->SetMarkerStyle(markerStyle[i]);
     gr_rc[i]->SetMarkerSize(2.0);
     gr_rc[i]->SetMarkerColor(2);
@@ -109,6 +110,12 @@ void v2Check_y_v2pt()
 
   c2->SaveAs(Form("fig/v2_pT_v2pt.pdf"));
   c2->SaveAs(Form("fig/v2_pT_v2pt.png"));
+
+  TFile *fout = new TFile("root/v2_pT_v2pt.root","recreate");
+  for(int i=0;i<NV2;i++) {
+    gr_rc[i]->Write();
+  }
+  fout->Close();
   
     /*
   TH1D *fMc = ((TH2D *)fin->Get("hPtCosTheta"))->ProjectionY("Mc",i1,i2);

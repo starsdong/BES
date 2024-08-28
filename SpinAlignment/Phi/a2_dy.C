@@ -38,7 +38,7 @@ void a2_dy(const Double_t sigY = 9.9)
     fin[iv2] = new TFile(Form("accept_Sergei_v2_%3.1f_Y_%3.1f.root", v2[iv2], sigY));
     for(int i=0;i<NY;i++) {
       c1->cd(i+1+iv2*NY);
-      fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2Phi"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]-1,i_edge[i]); // accumulative
+      fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2Phi"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]-1,i_edge[i]); // differential
       fMc[iv2][i]->Rebin(20);
       fRc[iv2][i] = ((TH2D *)fin[iv2]->Get("hYCos2PhiRc3"))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]-1,i_edge[i]);
       fRc[iv2][i]->Rebin(20);
