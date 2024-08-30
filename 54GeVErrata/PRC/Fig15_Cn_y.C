@@ -1,5 +1,5 @@
 #include "draw.C+"
-#include "style.C"
+#include "style.C+"
 
 void Fig15_Cn_y()
 {
@@ -200,13 +200,13 @@ void Fig15_Cn_y()
   pad_coll->Draw();
   pad_coll->cd();
 
-  drawText(0.05, 0.7, "STAR Au+Au Collisions", 42, 0.34);
+  drawText(0.05, 0.7, "STAR Au+Au Collisions", 42, 0.33);
   drawText(0.16, 0.4, "0-5% most central", 42, 0.30);
   drawText(0.05, 0.1, "0.4 < p_{T} < 2.0 (GeV/c), |y| < y_{max}", 42, 0.25);
   pad_coll->Update();
 
   c1->cd();
-  TPad *pad_leg = new TPad("pad_leg", "", 0.39, 0.47, 0.67, 0.53);
+  TPad *pad_leg = new TPad("pad_leg", "", 0.37, 0.47, 0.67, 0.53);
   pad_leg->Draw();
   pad_leg->cd();
 
@@ -219,7 +219,7 @@ void Fig15_Cn_y()
   for(int i=0;i<NP;i++) {
     leg[i] = new TLegend(x1_leg[i], 0.1, x2_leg[i], 0.9);
     leg[i]->SetLineColor(10);
-    leg[i]->SetTextSize(0.45);
+    leg[i]->SetTextSize(0.5);
     gr_leg[i] = (TGraphErrors *)gr_stat[0][0][index_leg[i]]->Clone();
     gr_leg[i]->SetMarkerSize(1.3);
     leg[i]->AddEntry(gr_leg[i], name_leg[i], "p");
