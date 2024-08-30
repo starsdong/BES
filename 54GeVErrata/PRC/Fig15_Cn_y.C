@@ -206,7 +206,7 @@ void Fig15_Cn_y()
   pad_coll->Update();
 
   c1->cd();
-  TPad *pad_leg = new TPad("pad_leg", "", 0.37, 0.47, 0.67, 0.53);
+  TPad *pad_leg = new TPad("pad_leg", "", 0.38, 0.47, 0.67, 0.53);
   pad_leg->Draw();
   pad_leg->cd();
 
