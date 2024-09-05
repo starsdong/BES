@@ -27,15 +27,16 @@ void Fig14_knk1_Npart()
   double cen[NP][NCen];
   double cum[NE][NCum+1][NP][NCen], cum_e[NE][NCum+1][NP][NCen], cum_e_sys[NE][NCum+1][NP][NCen];   // name is cum, actually are kappa in this Fig.
   double cumR[NE][NCum][NP][NCen], cumR_e[NE][NCum][NP][NCen], cumR_e_sys[NE][NCum][NP][NCen]; // ratios to k1
-  TFile *fin[NE][NP];
+  TFile *fin[NE];
   for(int i=0;i<NE;i++) {
     if(i!=index_54) {
+      fin[i] = new TFile(Form("fig14_16_19/fig14_corrfun_centrality/%sGeV_centrality.root",EneDir[i]));
       for(int j=0;j<NP;j++) {
-	fin[i][j] = new TFile(Form("rootfile_0517/final_corrfun_ycut/%sGeV/AuAu_sys_%s_Y0.5.root",EneDir[i],PName[j]));
+	//	fin[i][j] = new TFile(Form("rootfile_0517/final_corrfun_ycut/%sGeV/AuAu_sys_%s_Y0.5.root",EneDir[i],PName[j]));
 	TGraphErrors *gr_stat_a[NCum], *gr_sys_a[NCum];
 	for(int m=0;m<NCum;m++) {
-	  gr_stat_a[m] = (TGraphErrors *)fin[i][j]->Get(Form("K%d1_stat",m+2));
-	  gr_sys_a[m] = (TGraphErrors *)fin[i][j]->Get(Form("K%d1_sys",m+2));
+	  gr_stat_a[m] = (TGraphErrors *)fin[i]->Get(Form("%s_K%d1_stat",PName[j],m+2));
+	  gr_sys_a[m] = (TGraphErrors *)fin[i]->Get(Form("%s_K%d1_sys",PName[j],m+2));
 	  
 	  for(int k=0;k<NCen;k++) {
 	    cen[j][k] = gr_stat_a[m]->GetX()[k] + cen_offset[j];
@@ -50,8 +51,10 @@ void Fig14_knk1_Npart()
 	    }
 	  } // end k->NCen
 	} // end m->NCum
-	fin[i][j]->Close();
-	
+      } // end j->NP
+      fin[i]->Close();
+
+      for(int j=0;j<NP;j++) {
 	for(int m=0;m<NCum;m++) {
 	  gr_stat[i][m][j] = new TGraphErrors(NCen, cen[j], cumR[i][m][j], 0, cumR_e[i][m][j]);
 	  gr_sys[i][m][j] = new TGraphErrors(NCen, cen[j], cumR[i][m][j], 0, cumR_e_sys[i][m][j]);
@@ -147,6 +150,7 @@ void Fig14_knk1_Npart()
       for(int k=0;k<NP;k++) {
 	cout << "++ " << EneDir[i] << " " << PName[k] << Form(" k%d/k1",j+2) << endl;
 	gr_stat[i][j][k]->Print();
+	gr_sys[i][j][k]->Print();
 
 	drawSysError(gr_sys[i][j][k], 10, (ymax[j]-ymin[j])*0.02, kColor[k]);
 

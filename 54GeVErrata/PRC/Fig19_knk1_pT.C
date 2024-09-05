@@ -12,7 +12,8 @@ void Fig19_knk1_pT()
   const Int_t index_54 = 6;  // 54.4 GeV index in energy array
   const Double_t Ene[NE] = {7.7, 11.5, 14.5, 19.6, 27, 39, 54.4, 62.4, 200};
   const Char_t *EneLabel[NE] = {"7.7", "11.5", "14.5", "19.6", "27", "39", "54.4", "62.4", "200"};
-  const Char_t *EneDir[NE] = {"7", "11", "15", "19", "27", "39", "54", "62", "200"};  // directory names
+  //  const Char_t *EneDir[NE] = {"7", "11", "15", "19", "27", "39", "54", "62", "200"};  // directory names
+  const Char_t *EneDir[NE] = {"7.7", "11.5", "14.5", "19.6", "27", "39", "54", "62.4", "200"};  // directory names
   const Int_t NCum = 3; // 3 orders of kappa ratios
   const Int_t NP = 2; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro"};
@@ -36,29 +37,33 @@ void Fig19_knk1_pT()
   TGraphErrors *gr_stat[NE][NCum][NP], *gr_sys[NE][NCum][NP];  // all central collisions
   double cum[NE][NCum+1][NP][NPt], cum_e[NE][NCum+1][NP][NPt], cum_e_sys[NE][NCum+1][NP][NPt];   // name is cum, actually are kappa in this Fig.
   double cumR[NE][NCum][NP][NPt], cumR_e[NE][NCum][NP][NPt], cumR_e_sys[NE][NCum][NP][NPt]; // ratios to k1
-  TFile *fin[NE][NP][NPt];
+  TFile *fin[NE];
   for(int i=0;i<NE;i++) {
     if(i!=index_54) {
+      fin[i] = new TFile(Form("fig14_16_19/fig19_corrfun_ptcut/%sGeV_rapidity_scan.root",EneDir[i]));
       for(int j=0;j<NP;j++) {
-	for(int k=0;k<NPt;k++) {
-	  fin[i][j][k] = new TFile(Form("rootfile_0517/final_corrfun_ptcut/%sGeV/AuAu_sys_%s_pt%3.1f.root",EneDir[i],PName[j],PT[k]));
-	  TGraphErrors *gr_stat_a[NCum], *gr_sys_a[NCum];
-	  for(int m=0;m<NCum;m++) {
-	    gr_stat_a[m] = (TGraphErrors *)fin[i][j][k]->Get(Form("K%d1_stat",m+2));
-	    gr_sys_a[m] = (TGraphErrors *)fin[i][j][k]->Get(Form("K%d1_sys",m+2));
-	    cumR[i][m][j][k] = gr_stat_a[m]->GetY()[0];
-	    cumR_e[i][m][j][k] = gr_stat_a[m]->GetEY()[0];
-	    cumR_e_sys[i][m][j][k] = gr_sys_a[m]->GetEY()[0];
+	//	  fin[i][j][k] = new TFile(Form("rootfile_0517/final_corrfun_ptcut/%sGeV/AuAu_sys_%s_pt%3.1f.root",EneDir[i],PName[j],PT[k]));
+	TGraphErrors *gr_stat_a[NCum], *gr_sys_a[NCum];
+	for(int m=0;m<NCum;m++) {
+	  gr_stat_a[m] = (TGraphErrors *)fin[i]->Get(Form("%s_K%d1_stat",PName[j],m+2));
+	  gr_sys_a[m] = (TGraphErrors *)fin[i]->Get(Form("%s_K%d1_sys",PName[j],m+2));
+	  
+	  for(int k=0;k<NPt;k++) {
+	    cumR[i][m][j][k] = gr_stat_a[m]->GetY()[k];
+	    cumR_e[i][m][j][k] = gr_stat_a[m]->GetEY()[k];
+	    cumR_e_sys[i][m][j][k] = gr_sys_a[m]->GetEY()[k];
 	    //	    cout << EneDir[i] << " " << PName[j] << " " << rap[k] << Form(" C%d",m+1) << " " << cum[i][m][j][k] << endl;
 	    if(i==0&&m==NCum-1) { // 7.7 GeV C4 data points scaled down by 0.5
 	      cumR[i][m][j][k] *= 0.5;
 	      cumR_e[i][m][j][k] *= 0.5;
 	      cumR_e_sys[i][m][j][k] *= 0.5;
 	    }
-	  } // end m->NCum
-	  fin[i][j][k]->Close();
-	} // end k->NPt
+	  } // end k->NPt
+	} // end m->NCum
+      } // end j->NP
+      fin[i]->Close();
 
+      for(int j=0;j<NP;j++) {      
 	for(int m=0;m<NCum;m++) {
 	  gr_stat[i][m][j] = new TGraphErrors(NPt, pT[j], cumR[i][m][j], 0, cumR_e[i][m][j]);
 	  gr_sys[i][m][j] = new TGraphErrors(NPt, pT[j], cumR[i][m][j], 0, cumR_e_sys[i][m][j]);
@@ -151,7 +156,7 @@ void Fig19_knk1_pT()
 	cout << "++ " << EneDir[i] << " " << PName[k] << Form(" k%d/k1",j+2) << endl;
 	gr_stat[i][j][k]->Print();
 
-	drawSysError(gr_sys[i][j][k], 0.06, (ymax[j]-ymin[j])*0.02, kColor[k]);
+	drawSysError(gr_sys[i][j][k], 0.08, (ymax[j]-ymin[j])*0.02, kColor[k]);
 
 	setGraphMarker(gr_stat[i][j][k], kStyle[k], kColor[k], kSize[k]);
 	setGraphLine(gr_stat[i][j][k], 1, kColor[k], 1);
