@@ -15,13 +15,16 @@ void Fig17_CnCm_y()
   const Char_t *EneDir[NE] = {"7", "11", "15", "19", "27", "39", "54", "62", "200"};  // directory names
   const Int_t NCum = 3; // 3 orders of cumulant ratios
   const Char_t *CumName[NCum] = {"VM", "SD", "KV"};
+  const Char_t *CumName_54[NCum] = {"R21", "R32", "R42"};
   const Int_t NP = 3; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro", "Netp"};
-  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  //  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  const Char_t *PName_54[NP] = {"Pro", "Apro", "Netp"};
+  const Char_t *PName_His_54[NP] = {"Pro", "Pbar", "Netp"};
   const Int_t NY = 5;  // rapidity bins
   const Double_t RAP[NY] = {0.1, 0.2, 0.3, 0.4, 0.5};
   const Int_t NCen = 9; // 9 centrality bins
-  const double rap_offset[NP] = {0.00, 0.008, 0.016}; // different rapidity offsets for different particles for plotting
+  const double rap_offset[NP] = {0.00, 0.006, 0.012}; // different rapidity offsets for different particles for plotting
   double rap[NP][NY];
   for(int i=0;i<NP;i++) {
     for(int j=0;j<NY;j++) {
@@ -69,26 +72,38 @@ void Fig17_CnCm_y()
 	}
       } // end j->NP
     } else { // 54 GeV data
-      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
-      for(int j=0;j<NP;j++) {
-	TGraphErrors *gr_stat_b[NCum+1], *gr_sys_b[NCum+1];
-	for(int m=0;m<NCum;m++) {
-	  gr_stat_b[m] = (TGraphErrors *)fin_54->Get(Form("rapidity_%s_%s_stat",PName_54[j], CumName[m]));
-	  gr_sys_b[m] = (TGraphErrors *)fin_54->Get(Form("rapidity_%s_%s_sys",PName_54[j], CumName[m]));
+      //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
+      TFile *fin_54_stat[NY];
+      TFile *fin_54_sys[NP][NY];
+      
+      for(int k=0;k<NY;k++) {
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.y0p%d.root",k+1));
+	
+	for(int j=0;j<NP;j++) {
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p%d.root",PName_54[j],PName_His_54[j],k+1));
+	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
+	  for(int m=0;m<NCum;m++) {
+	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_%s",PName_His_54[j],CumName_54[m]));
+	    gr_sys_b[m] = (TGraphErrors *)fin_54_sys[j][k]->Get(Form("%s_%s_sys",PName_His_54[j],CumName_54[m]));
 	  
-	  for(int k=0;k<NY;k++) {
-	    cumR[i][m][j][k] = gr_stat_b[m]->GetY()[k];
-	    cumR_e[i][m][j][k] = gr_stat_b[m]->GetEY()[k];
-	    cumR_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[k];
-
+	    cumR[i][m][j][k] = gr_stat_b[m]->GetY()[0];
+	    cumR_e[i][m][j][k] = gr_stat_b[m]->GetEY()[0];
+	    cumR_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[0];
+	    
 	    if(i>=pad_gap_index && m==0) {
 	      cumR[i][m][j][k] *= 2.0;
 	      cumR_e[i][m][j][k] *= 2.0;
 	      cumR_e_sys[i][m][j][k] *= 2.0;  // C2/C1 scaled up by 2 for making Ndivisions show up well
 	    }
+	    
+	  } // end m->NCum
+	  fin_54_sys[j][k]->Close();
+	} // end j->NP
+	fin_54_stat[k]->Close();  
+      } // end k->NY
 
-	  }
-	  
+      for(int j=0;j<NP;j++) {
+	for(int m=0;m<NCum;m++) { 	  
 	  gr_stat[i][m][j] = new TGraphErrors(NY, rap[j], cumR[i][m][j], 0, cumR_e[i][m][j]);
 	  gr_sys[i][m][j] = new TGraphErrors(NY, rap[j], cumR[i][m][j], 0, cumR_e_sys[i][m][j]);
 	} // end m->NCum

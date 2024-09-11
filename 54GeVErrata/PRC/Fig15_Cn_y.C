@@ -16,11 +16,13 @@ void Fig15_Cn_y()
   const Int_t NCum = 4; // 4 orders of cumulants
   const Int_t NP = 3; // number of particle categories: Net-p, proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro", "Netp"};
-  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  //  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  const Char_t *PName_54[NP] = {"Pro", "Apro", "Netp"};
+  const Char_t *PName_His_54[NP] = {"Pro", "Pbar", "Netp"};
   const Int_t NY = 5;  // rapidity bins
   const Double_t RAP[NY] = {0.1, 0.2, 0.3, 0.4, 0.5};
   const Int_t NCen = 9; // 9 centrality bins
-  const double rap_offset[NP] = {0., 0.008, 0.016}; // different rapidity offsets for different particles for plotting
+  const double rap_offset[NP] = {0., 0.006, 0.012}; // different rapidity offsets for different particles for plotting
   double rap[NP][NY];
   for(int i=0;i<NP;i++) {
     for(int j=0;j<NY;j++) {
@@ -40,13 +42,13 @@ void Fig15_Cn_y()
       for(int j=0;j<NP;j++) {
 	for(int k=0;k<NY;k++) {
 	  fin[i][j][k] = new TFile(Form("rootfile_0517/final_cum_ycut/%sGeV/AuAu_sys_%s_Y%3.1f.root",EneDir[i],PName[j],RAP[k]));
-	  TGraphErrors *gr_stat_tmp[NCum], *gr_sys_tmp[NCum];
+	  TGraphErrors *gr_stat_a[NCum], *gr_sys_a[NCum];
 	  for(int m=0;m<NCum;m++) {
-	    gr_stat_tmp[m] = (TGraphErrors *)fin[i][j][k]->Get(Form("C%d_stat",m+1));
-	    gr_sys_tmp[m] = (TGraphErrors *)fin[i][j][k]->Get(Form("C%d_sys",m+1));
-	    cum[i][m][j][k] = gr_stat_tmp[m]->GetY()[0];
-	    cum_e[i][m][j][k] = gr_stat_tmp[m]->GetEY()[0];
-	    cum_e_sys[i][m][j][k] = gr_sys_tmp[m]->GetEY()[0];
+	    gr_stat_a[m] = (TGraphErrors *)fin[i][j][k]->Get(Form("C%d_stat",m+1));
+	    gr_sys_a[m] = (TGraphErrors *)fin[i][j][k]->Get(Form("C%d_sys",m+1));
+	    cum[i][m][j][k] = gr_stat_a[m]->GetY()[0];
+	    cum_e[i][m][j][k] = gr_stat_a[m]->GetEY()[0];
+	    cum_e_sys[i][m][j][k] = gr_sys_a[m]->GetEY()[0];
 	    //	    cout << EneDir[i] << " " << PName[j] << " " << rap[k] << Form(" C%d",m+1) << " " << cum[i][m][j][k] << endl;
 	    if(i==0&&m==NCum-1) { // 7.7 GeV C4 data points scaled down by 0.5
 	      cum[i][m][j][k] *= 0.5;
@@ -65,18 +67,38 @@ void Fig15_Cn_y()
 	}
       } // end j->NP
     } else { // 54 GeV data
-      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
-      for(int j=0;j<NP;j++) {
-	TGraphErrors *gr_stat_tmp[NCum], *gr_sys_tmp[NCum];
-	for(int m=0;m<NCum;m++) {
-	  gr_stat_tmp[m] = (TGraphErrors *)fin_54->Get(Form("rapidity_%s_C%d_stat",PName_54[j], m+1));
-	  gr_sys_tmp[m] = (TGraphErrors *)fin_54->Get(Form("rapidity_%s_C%d_sys",PName_54[j], m+1));
-
-	  gr_stat[i][m][j] = new TGraphErrors(gr_stat_tmp[m]->GetN(), rap[j], gr_stat_tmp[m]->GetY(), 0, gr_stat_tmp[m]->GetEY());
-	  gr_sys[i][m][j] = new TGraphErrors(gr_sys_tmp[m]->GetN(), rap[j], gr_sys_tmp[m]->GetY(), 0, gr_sys_tmp[m]->GetEY());
-	} // end m->NCum
+      //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
+      TFile *fin_54_stat[NY];
+      TFile *fin_54_sys[NP][NY];
+      
+      for(int k=0;k<NY;k++) {
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.y0p%d.root",k+1));
 	
-      } // end j->NP    
+	for(int j=0;j<NP;j++) {
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p%d.root",PName_54[j],PName_His_54[j],k+1));
+	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
+	  for(int m=0;m<NCum;m++) {
+	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_C%d",PName_His_54[j], m+1));
+	    gr_sys_b[m] = (TGraphErrors *)fin_54_sys[j][k]->Get(Form("%s_C%d_sys",PName_His_54[j], m+1));
+	    
+	    cum[i][m][j][k] = gr_stat_b[m]->GetY()[0];
+	    cum_e[i][m][j][k] = gr_stat_b[m]->GetEY()[0];
+	    cum_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[0];
+	    cout << EneDir[i] << " " << PName[j] << " " << rap[j][k] << Form(" C%d",m+1) << " " << cum[i][m][j][k] << endl;
+	  } // end m->NCum
+	  fin_54_sys[j][k]->Close();
+	} // end j->NP
+	fin_54_stat[k]->Close();
+      } // end k->NY
+
+      for(int j=0;j<NP;j++) {
+	for(int m=0;m<NCum;m++) {
+	  gr_stat[i][m][j] = new TGraphErrors(NY, rap[j], cum[i][m][j], 0, cum_e[i][m][j]);
+	  gr_sys[i][m][j] = new TGraphErrors(NY, rap[j], cum[i][m][j], 0, cum_e_sys[i][m][j]);
+	  gr_stat[i][m][j]->Print();
+	}
+      } // end m->NCum
+	
     } // end if(i!=index_54)
   } // end i->NE
 
@@ -96,7 +118,7 @@ void Fig15_Cn_y()
   const double xmax = 0.55;
   const Int_t kColor[NP] = {kBlue, kBlack, kRed};
   const Int_t kStyle[NP] = {21, 34, 20};
-  const Double_t kSize[NP] = {0.6, 1.1, 0.7};
+  const Double_t kSize[NP] = {0.6, 1.2, 0.7};
 
   ////////////////////////////////////////////////
   // Draw main panels

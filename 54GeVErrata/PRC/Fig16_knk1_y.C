@@ -17,7 +17,9 @@ void Fig16_knk1_y()
   const Int_t NCum = 3; // 3 orders of kappa ratios
   const Int_t NP = 2; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro"};
-  const Char_t *PName_54[NP] = {"pro", "antipro"};
+  //  const Char_t *PName_54[NP] = {"pro", "antipro"};
+  const Char_t *PName_54[NP] = {"Pro", "Apro"};
+  const Char_t *PName_His_54[NP] = {"Pro", "Pbar"};
   const Int_t NY = 5;  // rapidity bins
   const Double_t RAP[NY] = {0.1, 0.2, 0.3, 0.4, 0.5};
   const Int_t NCen = 9; // 9 centrality bins
@@ -76,30 +78,34 @@ void Fig16_knk1_y()
 	}
       } // end j->NP
     } else { // 54 GeV data
-      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CORRELATION_MAY17.root");
+      //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CORRELATION_MAY17.root");
+      TFile *fin_54_stat[NY];
+      TFile *fin_54_sys[NP][NY];
+      
+      for(int k=0;k<NY;k++) {
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.y0p%d.root",k+1));
+	
+	for(int j=0;j<NP;j++) {
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p%d.root",PName_54[j],PName_His_54[j],k+1));
+	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
+	  for(int m=0;m<NCum;m++) {
+	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_k%d1",PName_His_54[j], m+2));
+	    gr_sys_b[m] = (TGraphErrors *)fin_54_sys[j][k]->Get(Form("%s_k%d1_sys",PName_His_54[j], m+2));
+	  
+	    cumR[i][m][j][k] = gr_stat_b[m]->GetY()[0];
+	    cumR_e[i][m][j][k] = gr_stat_b[m]->GetEY()[0];
+	    cumR_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[0];
+	  } // end m->NCum
+	  fin_54_sys[j][k]->Close();
+	} // end j->NP
+	fin_54_stat[k]->Close();  
+      } // end k->NY
+
       for(int j=0;j<NP;j++) {
-	TGraphErrors *gr_stat_b[NCum+1], *gr_sys_b[NCum+1];
-	for(int m=0;m<NCum+1;m++) {
-	  gr_stat_b[m] = (TGraphErrors *)fin_54->Get(Form("rapidity_correl_%s_K%d_stat",PName_54[j], m+1));
-	  gr_sys_b[m] = (TGraphErrors *)fin_54->Get(Form("rapidity_correl_%s_K%d_sys",PName_54[j], m+1));
-	  
-	  for(int k=0;k<NY;k++) {
-	    cum[i][m][j][k] = gr_stat_b[m]->GetY()[k];
-	    cum_e[i][m][j][k] = gr_stat_b[m]->GetEY()[k];
-	    cum_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[k];
-	  }
-	}
-	for(int m=0;m<NCum;m++) {
-	  for(int k=0;k<NY;k++) {
-	    cumR[i][m][j][k] = cum[i][m+1][j][k]/cum[i][0][j][k];
-	    cumR_e[i][m][j][k] = fabs(cumR[i][m][j][k]) * sqrt(pow(cum_e[i][m+1][j][k]/cum[i][m+1][j][k], 2.0)+pow(cum_e[i][0][j][k]/cum[i][0][j][k], 2.0));
-	    cumR_e_sys[i][m][j][k] = fabs(cumR[i][m][j][k]) * sqrt(pow(cum_e_sys[i][m+1][j][k]/cum[i][m+1][j][k], 2.0)+pow(cum_e_sys[i][0][j][k]/cum[i][0][j][k], 2.0));
-	  }
-	  
+	for(int m=0;m<NCum;m++) { 	  
 	  gr_stat[i][m][j] = new TGraphErrors(NY, rap[j], cumR[i][m][j], 0, cumR_e[i][m][j]);
 	  gr_sys[i][m][j] = new TGraphErrors(NY, rap[j], cumR[i][m][j], 0, cumR_e_sys[i][m][j]);
 	} // end m->NCum
-	
       } // end j->NP    
     } // end if(i!=index_54)
   } // end i->NE

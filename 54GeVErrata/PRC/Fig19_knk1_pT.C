@@ -17,9 +17,12 @@ void Fig19_knk1_pT()
   const Int_t NCum = 3; // 3 orders of kappa ratios
   const Int_t NP = 2; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro"};
-  const Char_t *PName_54[NP] = {"pro", "antipro"};
+  //  const Char_t *PName_54[NP] = {"pro", "antipro"};
+  const Char_t *PName_54[NP] = {"Pro", "Apro"};
+  const Char_t *PName_His_54[NP] = {"Pro", "Pbar"};
   const Int_t NPt = 5;  // pT bins
   const Double_t PT[NPt] = {1.0, 1.2, 1.4, 1.6, 2.0};
+  const Char_t *PTName[NPt] = {"1p0", "1p2", "1p4", "1p6", "2p0"};
   const Double_t PTDIS[NPt] = {0.5, 1.0, 1.5, 2.0, 3.0}; // for display purpose
   const Int_t NCen = 9; // 9 centrality bins
   const double pT_offset[NP] = {0., 0.015}; // different pT offsets for different particles for plotting
@@ -72,32 +75,36 @@ void Fig19_knk1_pT()
 	}
       } // end j->NP
     } else { // 54 GeV data
-      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CORRELATION_MAY17.root");
-      for(int j=0;j<NP;j++) {
-	TGraphErrors *gr_stat_b[NCum+1], *gr_sys_b[NCum+1];
-	for(int m=0;m<NCum+1;m++) {
-	  gr_stat_b[m] = (TGraphErrors *)fin_54->Get(Form("pT_correl_%s_K%d_stat",PName_54[j], m+1));
-	  gr_sys_b[m] = (TGraphErrors *)fin_54->Get(Form("pT_correl_%s_K%d_sys",PName_54[j], m+1));
-
-	  for(int k=0;k<NPt;k++) {
-	    cum[i][m][j][k] = gr_stat_b[m]->GetY()[k];
-	    cum_e[i][m][j][k] = gr_stat_b[m]->GetEY()[k];
-	    cum_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[k];
-	  }
-	}
-
-	for(int m=0;m<NCum;m++) {
-	  for(int k=0;k<NPt;k++) {
-	    cumR[i][m][j][k] = cum[i][m+1][j][k]/cum[i][0][j][k];
-	    cumR_e[i][m][j][k] = fabs(cumR[i][m][j][k]) * sqrt(pow(cum_e[i][m+1][j][k]/cum[i][m+1][j][k], 2.0)+pow(cum_e[i][0][j][k]/cum[i][0][j][k], 2.0));
-	    cumR_e_sys[i][m][j][k] = fabs(cumR[i][m][j][k]) * sqrt(pow(cum_e_sys[i][m+1][j][k]/cum[i][m+1][j][k], 2.0)+pow(cum_e_sys[i][0][j][k]/cum[i][0][j][k], 2.0));
-	  }
-	  
-	  gr_stat[i][m][j] = new TGraphErrors(NPt, pT[j], cumR[i][m][j], 0, cumR_e[i][m][j]);
-	  gr_sys[i][m][j] = new TGraphErrors(NPt, pT[j], cumR[i][m][j], 0, cumR_e_sys[i][m][j]);	
-	} // end m->NCum
+      //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CORRELATION_MAY17.root");
+      TFile *fin_54_stat[NPt];
+      TFile *fin_54_sys[NP][NPt];
+      
+      for(int k=0;k<NPt;k++) {
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.pt%s.root",PTName[k]));
 	
+	for(int j=0;j<NP;j++) {
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_pt%s.root",PName_54[j],PName_His_54[j],PTName[k]));
+	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
+	  for(int m=0;m<NCum;m++) {
+	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_k%d1",PName_His_54[j], m+2));
+	    gr_sys_b[m] = (TGraphErrors *)fin_54_sys[j][k]->Get(Form("%s_k%d1_sys",PName_His_54[j], m+2));
+	  
+	    cumR[i][m][j][k] = gr_stat_b[m]->GetY()[0];
+	    cumR_e[i][m][j][k] = gr_stat_b[m]->GetEY()[0];
+	    cumR_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[0];
+	  } // end m->NCum
+	  fin_54_sys[j][k]->Close();
+	} // end j->NP
+	fin_54_stat[k]->Close();  
+      } // end k->NY
+
+      for(int j=0;j<NP;j++) {
+	for(int m=0;m<NCum;m++) { 	  
+	  gr_stat[i][m][j] = new TGraphErrors(NPt, pT[j], cumR[i][m][j], 0, cumR_e[i][m][j]);
+	  gr_sys[i][m][j] = new TGraphErrors(NPt, pT[j], cumR[i][m][j], 0, cumR_e_sys[i][m][j]);
+	} // end m->NCum
       } // end j->NP    
+      
     } // end if(i!=index_54)
   } // end i->NE
 
@@ -156,7 +163,7 @@ void Fig19_knk1_pT()
 	cout << "++ " << EneDir[i] << " " << PName[k] << Form(" k%d/k1",j+2) << endl;
 	gr_stat[i][j][k]->Print();
 
-	drawSysError(gr_sys[i][j][k], 0.08, (ymax[j]-ymin[j])*0.02, kColor[k]);
+	drawSysError(gr_sys[i][j][k], 0.08, (ymax[j]-ymin[j])*0.015, kColor[k]);
 
 	setGraphMarker(gr_stat[i][j][k], kStyle[k], kColor[k], kSize[k]);
 	setGraphLine(gr_stat[i][j][k], 1, kColor[k], 1);

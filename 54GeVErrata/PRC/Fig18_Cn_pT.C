@@ -16,9 +16,12 @@ void Fig18_Cn_pT()
   const Int_t NCum = 4; // 4 orders of cumulants
   const Int_t NP = 3; // number of particle categories: Net-p, proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro", "Netp"};
-  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  //  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  const Char_t *PName_54[NP] = {"Pro", "Apro", "Netp"};
+  const Char_t *PName_His_54[NP] = {"Pro", "Pbar", "Netp"};
   const Int_t NPt = 5;  // pT bins
   const Double_t PT[NPt] = {1.0, 1.2, 1.4, 1.6, 2.0};
+  const Char_t *PTName[NPt] = {"1p0", "1p2", "1p4", "1p6", "2p0"};
   const Double_t PTDIS[NPt] = {0.5, 1.0, 1.5, 2.0, 3.0}; // for display purpose
   const Int_t NCen = 9; // 9 centrality bins
   const double pT_offset[NP] = {0., 0.015, 0.03}; // different pT offsets for different particles for plotting
@@ -66,18 +69,37 @@ void Fig18_Cn_pT()
 	}
       } // end j->NP
     } else { // 54 GeV data
-      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
-      for(int j=0;j<NP;j++) {
-	TGraphErrors *gr_stat_tmp[NCum], *gr_sys_tmp[NCum];
-	for(int m=0;m<NCum;m++) {
-	  gr_stat_tmp[m] = (TGraphErrors *)fin_54->Get(Form("pT_%s_C%d_stat",PName_54[j], m+1));
-	  gr_sys_tmp[m] = (TGraphErrors *)fin_54->Get(Form("pT_%s_C%d_sys",PName_54[j], m+1));
-
-	  gr_stat[i][m][j] = new TGraphErrors(gr_stat_tmp[m]->GetN(), pT[j], gr_stat_tmp[m]->GetY(), 0, gr_stat_tmp[m]->GetEY());
-	  gr_sys[i][m][j] = new TGraphErrors(gr_sys_tmp[m]->GetN(), pT[j], gr_sys_tmp[m]->GetY(), 0, gr_sys_tmp[m]->GetEY());
-	} // end m->NCum
+      //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
+      TFile *fin_54_stat[NPt];
+      TFile *fin_54_sys[NP][NPt];
+      
+      for(int k=0;k<NPt;k++) {
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.pt%s.root",PTName[k]));
 	
-      } // end j->NP    
+	for(int j=0;j<NP;j++) {
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_pt%s.root",PName_54[j],PName_His_54[j],PTName[k]));
+	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
+	  for(int m=0;m<NCum;m++) {
+	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_C%d",PName_His_54[j], m+1));
+	    gr_sys_b[m] = (TGraphErrors *)fin_54_sys[j][k]->Get(Form("%s_C%d_sys",PName_His_54[j], m+1));
+	    
+	    cum[i][m][j][k] = gr_stat_b[m]->GetY()[0];
+	    cum_e[i][m][j][k] = gr_stat_b[m]->GetEY()[0];
+	    cum_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[0];
+	    cout << EneDir[i] << " " << PName[j] << " " << pT[j][k] << Form(" C%d",m+1) << " " << cum[i][m][j][k] << endl;
+	  } // end m->NCum
+	  fin_54_sys[j][k]->Close();
+	} // end j->NP
+	fin_54_stat[k]->Close();
+      } // end k->NPt
+
+      for(int j=0;j<NP;j++) {
+	for(int m=0;m<NCum;m++) {
+	  gr_stat[i][m][j] = new TGraphErrors(NPt, pT[j], cum[i][m][j], 0, cum_e[i][m][j]);
+	  gr_sys[i][m][j] = new TGraphErrors(NPt, pT[j], cum[i][m][j], 0, cum_e_sys[i][m][j]);
+	  gr_stat[i][m][j]->Print();
+	}
+      } // end m->NCum
     } // end if(i!=index_54)
   } // end i->NE
 
@@ -155,8 +177,8 @@ void Fig18_Cn_pT()
       }
 
       if(i==0&&j==NCum-1) { // 7.7 GeV C4 legend
-	drawText(xmin+(xmax-xmin)*0.05, 63*2, "C_{4} #times 0.5", 42, 0.13);
-	drawText(xmin+(xmax-xmin)*0.05, 50*2, "7.7 GeV only", 42, 0.13);
+	drawText(xmin+(xmax-xmin)*0.08, 63*2, "C_{4} #times 0.5", 42, 0.13);
+	drawText(xmin+(xmax-xmin)*0.08, 50*2, "7.7 GeV only", 42, 0.13);
       }
       
       pad[i][j]->Update();

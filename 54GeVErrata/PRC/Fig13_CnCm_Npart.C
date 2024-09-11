@@ -15,9 +15,12 @@ void Fig13_CnCm_Npart()
   const Char_t *EneDir[NE] = {"7", "11", "15", "19", "27", "39", "54", "62", "200"};  // directory names
   const Int_t NCum = 3; // 3 orders of cumulant ratios
   const Char_t *CumName[NCum] = {"VM", "SD", "KV"};
+  const Char_t *CumName_54[NCum] = {"R21", "R32", "R42"};
   const Int_t NP = 3; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro", "Netp"};
-  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  //  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
+  const Char_t *PName_54[NP] = {"Pro", "Apro", "Netp"};
+  const Char_t *PName_His_54[NP] = {"Pro", "Pbar", "Netp"};
   const Int_t NCen = 9; // 9 centrality bins
   const double cen_offset[NP] = {-3, 0, 3}; // different rapidity offsets for different particles for plotting  
   const int pad_gap_index = 5; // starting from index 5 (39 GeV)
@@ -69,7 +72,10 @@ void Fig13_CnCm_Npart()
 	}
       } // end j->NP
     } else { // 54 GeV data
-      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
+      //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
+      TFile *fin_54_stat;
+      TFile *fin_54_sys[NP];
+      
       for(int j=0;j<NP;j++) {
 	TGraphErrors *gr_stat_b[NCum+1], *gr_sys_b[NCum+1];
 	for(int m=0;m<NCum;m++) {
@@ -325,8 +331,8 @@ void Fig13_CnCm_Npart()
   c1->cd();
 
   c1->Update();
-  c1->SaveAs("fig/Fig17_CnCm_y.pdf");
-  c1->SaveAs("fig/Fig17_CnCm_y.png");
+  c1->SaveAs("fig/Fig13_CnCm_Npart.pdf");
+  c1->SaveAs("fig/Fig13_CnCm_Npart.png");
   
   
 }
