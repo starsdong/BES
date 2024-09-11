@@ -87,6 +87,12 @@ void Fig18_Cn_pT()
 	    cum_e[i][m][j][k] = gr_stat_b[m]->GetEY()[0];
 	    cum_e_sys[i][m][j][k] = gr_sys_b[m]->GetEY()[0];
 	    cout << EneDir[i] << " " << PName[j] << " " << pT[j][k] << Form(" C%d",m+1) << " " << cum[i][m][j][k] << endl;
+	    
+	    if(i>0&&m==NCum-1) { // non-7.7 GeV C4 data points scaled up by 2 - shown as 7.7 GeV scale down by 0.5
+	      cum[i][m][j][k] *= 2.0;
+	      cum_e[i][m][j][k] *= 2.0;
+	      cum_e_sys[i][m][j][k] *= 2.0;
+	    }
 	  } // end m->NCum
 	  fin_54_sys[j][k]->Close();
 	} // end j->NP
