@@ -73,14 +73,15 @@ void Fig13_CnCm_Npart()
       } // end j->NP
     } else { // 54 GeV data
       //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CUMULANTS_MAY17.root");
-      TFile *fin_54_stat;
+      TFile *fin_54_stat = new TFile("54GeV_data_Sep11/stat/stat.y0p5.root");
       TFile *fin_54_sys[NP];
       
       for(int j=0;j<NP;j++) {
+	fin_54_sys[j] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p5.root",PName_54[j],PName_His_54[j]));
 	TGraphErrors *gr_stat_b[NCum+1], *gr_sys_b[NCum+1];
 	for(int m=0;m<NCum;m++) {
-	  gr_stat_b[m] = (TGraphErrors *)fin_54->Get(Form("centrality_%s_%s_stat",PName_54[j], CumName[m]));
-	  gr_sys_b[m] = (TGraphErrors *)fin_54->Get(Form("centrality_%s_%s_sys",PName_54[j], CumName[m]));
+	  gr_stat_b[m] = (TGraphErrors *)fin_54_stat->Get(Form("%s_%s",PName_His_54[j], CumName_54[m]));
+	  gr_sys_b[m] = (TGraphErrors *)fin_54_sys[j]->Get(Form("%s_%s_sys",PName_His_54[j], CumName_54[m]));
 	  
 	  for(int k=0;k<NCen;k++) {
 	    cen[j][k] = gr_stat_b[m]->GetX()[k] + cen_offset[j];
