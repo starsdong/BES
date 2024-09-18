@@ -19,7 +19,7 @@ void Fig17_CnCm_y()
   const Int_t NP = 3; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro", "Netp"};
   //  const Char_t *PName_54[NP] = {"pro", "antipro", "netp"};
-  const Char_t *PName_54[NP] = {"Pro", "Apro", "Netp"};
+  const Char_t *PName_54[NP] = {"Pro", "Pbar", "Netp"};
   const Char_t *PName_His_54[NP] = {"Pro", "Pbar", "Netp"};
   const Int_t NY = 5;  // rapidity bins
   const Double_t RAP[NY] = {0.1, 0.2, 0.3, 0.4, 0.5};
@@ -77,10 +77,12 @@ void Fig17_CnCm_y()
       TFile *fin_54_sys[NP][NY];
       
       for(int k=0;k<NY;k++) {
-	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.y0p%d.root",k+1));
+	//	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.y0p%d.root",k+1));
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep18/eff_corrected/9bins/stat/stat.y0p%d.root",k+1));
 	
 	for(int j=0;j<NP;j++) {
-	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p%d.root",PName_54[j],PName_His_54[j],k+1));
+	  //	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p%d.root",PName_54[j],PName_His_54[j],k+1));
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep18/eff_corrected/9bins/sys/%s/Sys_%s_y0p%d.root",PName_54[j],PName_His_54[j],k+1));
 	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
 	  for(int m=0;m<NCum;m++) {
 	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_%s",PName_His_54[j],CumName_54[m]));
@@ -193,6 +195,11 @@ void Fig17_CnCm_y()
 	setGraphMarker(gr_stat[i][j][k], kStyle[k], kColor[k], kSize[k]);
 	setGraphLine(gr_stat[i][j][k], 1, kColor[k], 1);
 	gr_stat[i][j][k]->Draw("p");
+
+	if(i==6 && j==2 && k==2) { // 54.4 GeV, C4/C2, Netp
+	  gr_stat[i][j][k]->SetName(Form("%s_%s_%s_stat",CumName_54[j],PName[k],EneDir[i]));
+	  gr_sys[i][j][k]->SetName(Form("%s_%s_%s_sys",CumName_54[j],PName[k],EneDir[i]));
+	}
 
       }
 

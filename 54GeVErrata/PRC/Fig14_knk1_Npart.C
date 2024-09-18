@@ -17,7 +17,7 @@ void Fig14_knk1_Npart()
   const Int_t NP = 2; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro"};
   //  const Char_t *PName_54[NP] = {"pro", "antipro"};
-  const Char_t *PName_54[NP] = {"Pro", "Apro"};
+  const Char_t *PName_54[NP] = {"Pro", "Pbar"};
   const Char_t *PName_His_54[NP] = {"Pro", "Pbar"};
   const Int_t NCen = 9; // 9 centrality bins
   const double cen_offset[NP] = {5, 0}; // different rapidity offsets for different particles for plotting  
@@ -66,11 +66,13 @@ void Fig14_knk1_Npart()
       } // end j->NP
     } else { // 54 GeV data
       //      TFile *fin_54 = new TFile("rootfile_0517/54GeV/54GeV_CORRELATION_MAY17.root"); // published data
-      TFile *fin_54_stat = new TFile("54GeV_data_Sep11/stat/stat.y0p5.root");
+      //      TFile *fin_54_stat = new TFile("54GeV_data_Sep11/stat/stat.y0p5.root");
+      TFile *fin_54_stat = new TFile("54GeV_data_Sep18/eff_corrected/9bins/stat/stat.y0p5.root");
       TFile *fin_54_sys[NP];
       
       for(int j=0;j<NP;j++) {
-	fin_54_sys[j] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p5.root",PName_54[j],PName_His_54[j]));
+	//	fin_54_sys[j] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p5.root",PName_54[j],PName_His_54[j]));
+	fin_54_sys[j] = new TFile(Form("54GeV_data_Sep18/eff_corrected/9bins/sys/%s/Sys_%s_y0p5.root",PName_54[j],PName_His_54[j]));
 	cout << Form("54GeV_data_Sep11/sys/%s/Sys_%s_y0p5.root",PName_54[j],PName_54[j]) << endl;
 	TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
 	for(int m=0;m<NCum;m++) {

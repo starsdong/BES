@@ -18,7 +18,7 @@ void Fig19_knk1_pT()
   const Int_t NP = 2; // number of particle categories: proton, anti-proton
   const Char_t *PName[NP] = {"Pro", "Apro"};
   //  const Char_t *PName_54[NP] = {"pro", "antipro"};
-  const Char_t *PName_54[NP] = {"Pro", "Apro"};
+  const Char_t *PName_54[NP] = {"Pro", "Pbar"};
   const Char_t *PName_His_54[NP] = {"Pro", "Pbar"};
   const Int_t NPt = 5;  // pT bins
   const Double_t PT[NPt] = {1.0, 1.2, 1.4, 1.6, 2.0};
@@ -80,10 +80,12 @@ void Fig19_knk1_pT()
       TFile *fin_54_sys[NP][NPt];
       
       for(int k=0;k<NPt;k++) {
-	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.pt%s.root",PTName[k]));
+	//	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep11/stat/stat.pt%s.root",PTName[k]));
+	fin_54_stat[k] = new TFile(Form("54GeV_data_Sep18/eff_corrected/9bins/stat/stat.pt%s.root",PTName[k]));
 	
 	for(int j=0;j<NP;j++) {
-	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_pt%s.root",PName_54[j],PName_His_54[j],PTName[k]));
+	  //	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep11/sys/%s/Sys_%s_pt%s.root",PName_54[j],PName_His_54[j],PTName[k]));
+	  fin_54_sys[j][k] = new TFile(Form("54GeV_data_Sep18/eff_corrected/9bins/sys/%s/Sys_%s_pt%s.root",PName_54[j],PName_His_54[j],PTName[k]));
 	  TGraphErrors *gr_stat_b[NCum], *gr_sys_b[NCum];
 	  for(int m=0;m<NCum;m++) {
 	    gr_stat_b[m] = (TGraphErrors *)fin_54_stat[k]->Get(Form("%s_k%d1",PName_His_54[j], m+2));
