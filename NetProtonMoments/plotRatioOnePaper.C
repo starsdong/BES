@@ -161,7 +161,7 @@ void plotRatioOnePaper()
       xe_fxt[im][i] = C42_ener_fxt[i];
       r_fxt[im][i] = C42_fxt[i] / C42_model_fxt[im][i];
       //      re_fxt[im][i] = fabs(C42_stat_fxt[i] / C42_model_fxt[im][i]);
-      re_fxt[im][i] = sqrt(C42_stat_fxt[i]*C42_stat_fxt[i] + C42_err_model_fxt[im][i]*C42_err_model_fxt[im][i]) / C42_model_fxt[im][i];
+      re_fxt[im][i] = sqrt(C42_stat_fxt[i]*C42_stat_fxt[i] + C42_err_model_fxt[im][i]*C42_err_model_fxt[im][i]) / fabs(C42_model_fxt[im][i]);
       res_fxt[im][i] = fabs(C42_sys_fxt[i] / C42_model_fxt[im][i]);
 
       ener[im][i] = C42_ener_fxt[i] * ( 1 + sc[im] );
@@ -227,7 +227,7 @@ void plotRatioOnePaper()
     
     drawSysBoxInRange(gr_rs[im], 0.03, 18, 1, y1, y2);
     setGraphMarker(gr_r[im], markerStyle[im], markerColor[im], markerSize[im]);
-    setGraphLine(gr_r[im], 1, markerColor[im]);
+    setGraphLine(gr_r[im], 1, markerColor[im], 1);
     gr_r[im]->Draw("p");
 
     if(im==3) { // replot ratio to 70-80% data with solid marker
@@ -240,18 +240,19 @@ void plotRatioOnePaper()
     
     if(im==0) {
       drawSysBoxInRange(gr_rs_fxt[im], 0.03, 18, 1, y1, y2);
-      setGraphMarker(gr_r_fxt[im], markerStyle[im], markerColor[im], 1.2);
-      setGraphLine(gr_r_fxt[im], 1, markerColor[im]);
+      setGraphMarker(gr_r_fxt[im], markerStyle[im], markerColor[im], markerSize[im]);
+      setGraphLine(gr_r_fxt[im], 1, markerColor[im], 1);
       gr_r_fxt[im]->Draw("p");
 
       drawText(15, 1.95, "Au+Au Collisions at RHIC", 42, 0.05);
-      drawText(15, 1.75, "0-5%, |y| < 0.5, 0.4 < p_{T} < 2.0 GeV/c", 42, 0.04);
+      drawText(13, 1.78, "0-5%, |y| < 0.5, 0.4 < p_{T} < 2.0 GeV/c", 42, 0.04);
     }
   }
 
   for(int im=0;im<n_model;im++) {
     if(!plotflag[im]) continue;    
     gr_r[im]->Draw("p");
+    gr_r_fxt[im]->Draw("p");
   }
 
   drawText(2.7, 1.1, "-0.5<y<0", 42, 0.03,90);
@@ -284,7 +285,7 @@ void plotRatioOnePaper()
   
   
   
-  drawHistBox(x1, x2, y1, y2);
+  drawHistBox(x1, x2, y1, y2, 2222);
   c1->Update();
   c1->cd();
   
