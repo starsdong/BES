@@ -165,8 +165,8 @@ void plotRatioOnePaper()
       //      re_fxt[im][i] = fabs(C42_stat_fxt[i] / C42_model_fxt[im][i]);
       // re_fxt[im][i] = sqrt(C42_stat_fxt[i]*C42_stat_fxt[i] + C42_err_model_fxt[im][i]*C42_err_model_fxt[im][i]) / fabs(C42_model_fxt[im][i]);
       // res_fxt[im][i] = fabs(C42_sys_fxt[i] / C42_model_fxt[im][i]);
-      re_fxt[im][i] = sqrt(pow(C42_stat_fxt[i]/C42_fxt[i], 2.0) + pow(C42_err_model_fxt[im][i]/C42_model_fxt[im][i], 2.0)) * r_fxt[im][i];
-      res_fxt[im][i] = sqrt(pow(C42_sys_fxt[i]/C42_fxt[i], 2.0)) * r_fxt[im][i];
+      re_fxt[im][i] = sqrt(pow(C42_stat_fxt[i]/C42_fxt[i], 2.0) + pow(C42_err_model_fxt[im][i]/C42_model_fxt[im][i], 2.0)) * fabs(r_fxt[im][i]);
+      res_fxt[im][i] = sqrt(pow(C42_sys_fxt[i]/C42_fxt[i], 2.0)) * fabs(r_fxt[im][i]);
 
       ener[im][i] = C42_ener_fxt[i] * ( 1 + sc[im] );
       r_unity[im][i] = 1.0;      
