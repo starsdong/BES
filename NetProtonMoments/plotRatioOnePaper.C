@@ -139,8 +139,10 @@ void plotRatioOnePaper()
       xe[im][i] = C42_ener[i] * (1 + sc[im]);
       r[im][i] = C42_val[i] / C42_model[im][i];
       //      re[im][i] = fabs(C42_stat_Ref3X_besNEW[i] / C42_model[im][i]);
-      re[im][i] = sqrt(C42_stat[i]*C42_stat[i] + C42_stat_model[im][i]*C42_stat_model[im][i])  / C42_model[im][i];
-      res[im][i] = sqrt(C42_sys[i]*C42_sys[i] + C42_sys_model[im][i]*C42_sys_model[im][i])  / C42_model[im][i];
+      re[im][i] = sqrt(pow(C42_stat[i]/C42_val[i], 2.0) + pow(C42_stat_model[im][i]/C42_model[im][i], 2.0)) * fabs(r[im][i]);
+      res[im][i] = sqrt(pow(C42_sys[i]/C42_val[i], 2.0) + pow(C42_sys_model[im][i]/C42_model[im][i], 2.0)) * fabs(r[im][i]);
+      // re[im][i] = sqrt(C42_stat[i]*C42_stat[i] + C42_stat_model[im][i]*C42_stat_model[im][i])  / C42_model[im][i];
+      // res[im][i] = sqrt(C42_sys[i]*C42_sys[i] + C42_sys_model[im][i]*C42_sys_model[im][i])  / C42_model[im][i];
 
       ener[im][i+ntot_fxt] = C42_ener[i] * (1 + sc[im]);
       r_unity[im][i+ntot_fxt] = 1.0;
@@ -161,8 +163,10 @@ void plotRatioOnePaper()
       xe_fxt[im][i] = C42_ener_fxt[i];
       r_fxt[im][i] = C42_fxt[i] / C42_model_fxt[im][i];
       //      re_fxt[im][i] = fabs(C42_stat_fxt[i] / C42_model_fxt[im][i]);
-      re_fxt[im][i] = sqrt(C42_stat_fxt[i]*C42_stat_fxt[i] + C42_err_model_fxt[im][i]*C42_err_model_fxt[im][i]) / fabs(C42_model_fxt[im][i]);
-      res_fxt[im][i] = fabs(C42_sys_fxt[i] / C42_model_fxt[im][i]);
+      // re_fxt[im][i] = sqrt(C42_stat_fxt[i]*C42_stat_fxt[i] + C42_err_model_fxt[im][i]*C42_err_model_fxt[im][i]) / fabs(C42_model_fxt[im][i]);
+      // res_fxt[im][i] = fabs(C42_sys_fxt[i] / C42_model_fxt[im][i]);
+      re_fxt[im][i] = sqrt(pow(C42_stat_fxt[i]/C42_fxt[i], 2.0) + pow(C42_err_model_fxt[im][i]/C42_model_fxt[im][i], 2.0)) * r_fxt[im][i];
+      res_fxt[im][i] = sqrt(pow(C42_sys_fxt[i]/C42_fxt[i], 2.0)) * r_fxt[im][i];
 
       ener[im][i] = C42_ener_fxt[i] * ( 1 + sc[im] );
       r_unity[im][i] = 1.0;      
@@ -275,8 +279,8 @@ void plotRatioOnePaper()
     drawText(xpos[it], ypos, xlabel[it], 42, 0.05, 0);
   }
   const Int_t nl = 1;
-  const Double_t xl[nl] = {57.8};
-  const Double_t yl[nl] = {0.118};
+  const Double_t xl[nl] = {57.58};
+  const Double_t yl[nl] = {0.1184};
   TGraph *gr_l = new TGraph(nl, xl, yl);
   gr_l->SetMarkerColor(kRed);
   gr_l->SetMarkerStyle(20);
