@@ -2,7 +2,7 @@
 #include "style.C+"
 
 
-void plotRatioOnePaper()
+void plotDiffOnePaper()
 {
   style();
 
@@ -132,57 +132,51 @@ void plotRatioOnePaper()
 
   //////////// making ratio plot
   const Double_t sc[n_model] = {-0.06, -0.03, 0., 0.03};
-  double xe[n_model][ntot_datapts], r[n_model][ntot_datapts], re[n_model][ntot_datapts], res[n_model][ntot_datapts];
-  double ener[n_model][ntot_datapts+ntot_fxt], r_unity[n_model][ntot_datapts+ntot_fxt], resm[n_model][ntot_datapts+ntot_fxt];
+  double xe[n_model][ntot_datapts], diff[n_model][ntot_datapts], diffe[n_model][ntot_datapts], diffes[n_model][ntot_datapts];
+  double ener[n_model][ntot_datapts+ntot_fxt], diff_zero[n_model][ntot_datapts+ntot_fxt], diffesm[n_model][ntot_datapts+ntot_fxt];
   for(int im=0;im<n_model;im++) {
     for(int i=0;i<ntot_datapts;i++) {
       xe[im][i] = C42_ener[i] * (1 + sc[im]);
-      r[im][i] = C42_val[i] / C42_model[im][i];
-      //      re[im][i] = fabs(C42_stat_Ref3X_besNEW[i] / C42_model[im][i]);
-      re[im][i] = sqrt(pow(C42_stat[i]/C42_val[i], 2.0) + pow(C42_stat_model[im][i]/C42_model[im][i], 2.0)) * fabs(r[im][i]);
-      res[im][i] = sqrt(pow(C42_sys[i]/C42_val[i], 2.0) + pow(C42_sys_model[im][i]/C42_model[im][i], 2.0)) * fabs(r[im][i]);
-      // re[im][i] = sqrt(C42_stat[i]*C42_stat[i] + C42_stat_model[im][i]*C42_stat_model[im][i])  / C42_model[im][i];
-      // res[im][i] = sqrt(C42_sys[i]*C42_sys[i] + C42_sys_model[im][i]*C42_sys_model[im][i])  / C42_model[im][i];
+      diff[im][i] = C42_val[i] - C42_model[im][i];
+      diffe[im][i] = sqrt(pow(C42_stat[i], 2.0) + pow(C42_stat_model[im][i], 2.0));
+      diffes[im][i] = sqrt(pow(C42_sys[i], 2.0) + pow(C42_sys_model[im][i], 2.0));
 
       ener[im][i+ntot_fxt] = C42_ener[i] * (1 + sc[im]);
-      r_unity[im][i+ntot_fxt] = 1.0;
-      resm[im][i+ntot_fxt] = fabs(C42_err_model[im][i] / C42_model[im][i]);  // model uncertainty
+      diff_zero[im][i+ntot_fxt] = 0.0;
+      diffesm[im][i+ntot_fxt] = C42_err_model[im][i];  // model uncertainty
     }
   }
-  TGraphErrors *gr_r[n_model], *gr_rs[n_model], *gr_rsm[n_model];
+  TGraphErrors *gr_d[n_model], *gr_ds[n_model], *gr_dsm[n_model];
   for(int im=0;im<n_model;im++) {
-    gr_r[im] = new TGraphErrors(ntot_datapts, xe[im], r[im], 0, re[im]);
-    gr_r[im]->Print();
-    gr_rs[im] = new TGraphErrors(ntot_datapts, xe[im], r[im], 0, res[im]);
+    gr_d[im] = new TGraphErrors(ntot_datapts, xe[im], diff[im], 0, diffe[im]);
+    gr_d[im]->Print();
+    gr_ds[im] = new TGraphErrors(ntot_datapts, xe[im], diff[im], 0, diffes[im]);
   }
 
-  double xe_fxt[n_model][ntot_fxt], r_fxt[n_model][ntot_fxt], re_fxt[n_model][ntot_fxt], res_fxt[n_model][ntot_fxt];
+  double xe_fxt[n_model][ntot_fxt], diff_fxt[n_model][ntot_fxt], diffe_fxt[n_model][ntot_fxt], diffes_fxt[n_model][ntot_fxt];
   for(int im=0;im<n_model;im++) {
     for(int i=0;i<ntot_fxt;i++) {
       if(fabs(C42_model_fxt[im][i])<1.e-4) continue;
       xe_fxt[im][i] = C42_ener_fxt[i];
-      r_fxt[im][i] = C42_fxt[i] / C42_model_fxt[im][i];
-      //      re_fxt[im][i] = fabs(C42_stat_fxt[i] / C42_model_fxt[im][i]);
-      // re_fxt[im][i] = sqrt(C42_stat_fxt[i]*C42_stat_fxt[i] + C42_err_model_fxt[im][i]*C42_err_model_fxt[im][i]) / fabs(C42_model_fxt[im][i]);
-      // res_fxt[im][i] = fabs(C42_sys_fxt[i] / C42_model_fxt[im][i]);
-      re_fxt[im][i] = sqrt(pow(C42_stat_fxt[i]/C42_fxt[i], 2.0) + pow(C42_err_model_fxt[im][i]/C42_model_fxt[im][i], 2.0)) * fabs(r_fxt[im][i]);
-      res_fxt[im][i] = sqrt(pow(C42_sys_fxt[i]/C42_fxt[i], 2.0)) * fabs(r_fxt[im][i]);
+      diff_fxt[im][i] = C42_fxt[i] - C42_model_fxt[im][i];
+      diffe_fxt[im][i] = sqrt(pow(C42_stat_fxt[i], 2.0) + pow(C42_err_model_fxt[im][i], 2.0));
+      diffes_fxt[im][i] = C42_sys_fxt[i];
 
       ener[im][i] = C42_ener_fxt[i] * ( 1 + sc[im] );
-      r_unity[im][i] = 1.0;      
-      resm[im][i] = fabs(C42_err_model_fxt[im][i] / C42_model_fxt[im][i]);
+      diff_zero[im][i] = 0.0;      
+      diffesm[im][i] = C42_err_model_fxt[im][i];
     }
   }
-  TGraphErrors *gr_r_fxt[n_model], *gr_rs_fxt[n_model];
+  TGraphErrors *gr_d_fxt[n_model], *gr_ds_fxt[n_model];
   for(int im=0;im<n_model;im++) {
-    gr_r_fxt[im] = new TGraphErrors(ntot_fxt, xe_fxt[im], r_fxt[im], 0, re_fxt[im]);
-    gr_r_fxt[im]->Print();
-    gr_rs_fxt[im] = new TGraphErrors(ntot_fxt, xe_fxt[im], r_fxt[im], 0, res_fxt[im]);
+    gr_d_fxt[im] = new TGraphErrors(ntot_fxt, xe_fxt[im], diff_fxt[im], 0, diffe_fxt[im]);
+    gr_d_fxt[im]->Print();
+    gr_ds_fxt[im] = new TGraphErrors(ntot_fxt, xe_fxt[im], diff_fxt[im], 0, diffes_fxt[im]);
   }
   cout << " Model Uncertainties " << endl;
   for(int im=0;im<n_model;im++) {
-    gr_rsm[im] = new TGraphErrors(ntot_fxt+ntot_datapts, ener[im], r_unity[im], 0, resm[im]);
-    gr_rsm[im]->Print();
+    gr_dsm[im] = new TGraphErrors(ntot_fxt+ntot_datapts, ener[im], diff_zero[im], 0, diffesm[im]);
+    gr_dsm[im]->Print();
   }
   
   TCanvas *c1 = new TCanvas("c1","",1000,800);
@@ -192,8 +186,8 @@ void plotRatioOnePaper()
 
   double x1 = 1.8;
   double x2 = 300;
-  double y1 = 0.0;
-  double y2 = 2.2;
+  double y1 = -0.65;
+  double y2 = 0.59;
     
   TH1D *d0 = new TH1D("d0","",1, x1, x2);
   d0->SetMinimum(y1);
@@ -204,8 +198,8 @@ void plotRatioOnePaper()
   d0->GetXaxis()->SetLabelSize(0.05);  
   d0->GetXaxis()->SetTitleOffset(1.2);  
   d0->GetXaxis()->SetTitleSize(0.065);  
-  d0->GetYaxis()->SetNdivisions(205);  
-  d0->GetYaxis()->SetTitle("[C_{4}/C_{2}]^{Data} / [C_{4}/C_{2}]^{Reference}");  
+  d0->GetYaxis()->SetNdivisions(405);  
+  d0->GetYaxis()->SetTitle("[C_{4}/C_{2}]^{Data} - [C_{4}/C_{2}]^{Reference}");  
   //  d0->GetYaxis()->SetTitle("R_{42}^{data} / R_{42}^{model}");  
   d0->GetYaxis()->SetTitleOffset(1.1);  
   d0->GetYaxis()->SetTitleSize(0.068);  
@@ -214,7 +208,7 @@ void plotRatioOnePaper()
   d0->Draw("c");
 
   //  drawLine(x1, 0, x2, 0, 1, 9, 13);
-  drawLine(x1, 1, x2, 1, 2, 9, 13);
+  drawLine(x1, 0, x2, 0, 2, 9, 13);
 
   const Int_t markerColor[n_model] = {kBlue, kBlack, kBlack, kBlack};
   const Int_t markerStyle[n_model] = {25, 28, 26, 24};
@@ -225,41 +219,41 @@ void plotRatioOnePaper()
     cout << " Model " << im << endl;
     
     if(0) {
-      setGraphFill(gr_rsm[im], 1001, kCyan-10, 1);
-      gr_rsm[im]->Draw("e3");
+      setGraphFill(gr_dsm[im], 1001, kCyan-10, 1);
+      gr_dsm[im]->Draw("e3");
     }
     
-    drawSysBoxInRange(gr_rs[im], 0.03, 18, 1, y1, y2);
-    setGraphMarker(gr_r[im], markerStyle[im], markerColor[im], markerSize[im]);
-    setGraphLine(gr_r[im], 1, markerColor[im], 1);
-    gr_r[im]->Draw("p");
+    drawSysBoxInRange(gr_ds[im], 0.03, 18, 1, y1, y2);
+    setGraphMarker(gr_d[im], markerStyle[im], markerColor[im], markerSize[im]);
+    setGraphLine(gr_d[im], 1, markerColor[im], 1);
+    gr_d[im]->Draw("p");
 
     if(im==3) { // replot ratio to 70-80% data with solid marker
-      TGraph *gr_d = (TGraph *)gr_r[im]->Clone(Form("Ratio_%d", im));
-      gr_d->SetMarkerColor(kRed);
-      gr_d->SetMarkerStyle(20);
-      gr_d->SetMarkerSize(1.2);
-      gr_d->Draw("p");
+      TGraph *gr_d3 = (TGraph *)gr_d[im]->Clone(Form("Diff_%d", im));
+      gr_d3->SetMarkerColor(kRed);
+      gr_d3->SetMarkerStyle(20);
+      gr_d3->SetMarkerSize(1.2);
+      gr_d3->Draw("p");
     }
     
     if(im==0) {
-      drawSysBoxInRange(gr_rs_fxt[im], 0.03, 18, 1, y1, y2);
-      setGraphMarker(gr_r_fxt[im], markerStyle[im], markerColor[im], markerSize[im]);
-      setGraphLine(gr_r_fxt[im], 1, markerColor[im], 1);
-      gr_r_fxt[im]->Draw("p");
+      drawSysBoxInRange(gr_ds_fxt[im], 0.03, 18, 1, y1, y2);
+      setGraphMarker(gr_d_fxt[im], markerStyle[im], markerColor[im], markerSize[im]);
+      setGraphLine(gr_d_fxt[im], 1, markerColor[im], 1);
+      gr_d_fxt[im]->Draw("p");
 
-      drawText(15, y1+(y2-y1)*0.886, "Au+Au Collisions at RHIC", 42, 0.05);
-      drawText(13, y1+(y2-y1)*0.809, "0-5%, |y| < 0.5, 0.4 < p_{T} < 2.0 GeV/c", 42, 0.04);
+      drawText(15, y1+(y2-y1)*0.90, "Au+Au Collisions at RHIC", 42, 0.05);
+      drawText(13, y1+(y2-y1)*0.825, "0-5%, |y| < 0.5, 0.4 < p_{T} < 2.0 GeV/c", 42, 0.04);
     }
   }
 
   for(int im=0;im<n_model;im++) {
     if(!plotflag[im]) continue;    
-    gr_r[im]->Draw("p");
-    gr_r_fxt[im]->Draw("p");
+    gr_d[im]->Draw("p");
+    gr_d_fxt[im]->Draw("p");
   }
 
-  drawText(2.7, 1.1, "-0.5<y<0", 42, 0.03,90);
+  drawText(2.7, -0.2, "-0.5<y<0", 42, 0.03,90);
   
   drawText(72, y1+(y2-y1)*0.273, "Reference:", 42, 0.045);
   TLegend *leg = new TLegend(0.68, 0.2, 0.96, 0.38);
@@ -267,7 +261,7 @@ void plotRatioOnePaper()
   leg->SetTextSize(0.04);
   for(int im=0;im<n_model;im++) {
     if(!plotflag[im]) continue;
-    leg->AddEntry(gr_r[im], NameModel[im], "p");
+    leg->AddEntry(gr_d[im], NameModel[im], "p");
   }
   leg->Draw();
 
@@ -293,8 +287,8 @@ void plotRatioOnePaper()
   c1->Update();
   c1->cd();
   
-  c1->SaveAs("C42_ratio_one_paper.png");  
-  c1->SaveAs("C42_ratio_one_paper.pdf");
+  c1->SaveAs("C42_diff_one_paper.png");  
+  c1->SaveAs("C42_diff_one_paper.pdf");
   
 }
 
