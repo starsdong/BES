@@ -199,7 +199,7 @@ void plotDiffOnePaper()
   d0->GetXaxis()->SetTitleOffset(1.2);  
   d0->GetXaxis()->SetTitleSize(0.065);  
   d0->GetYaxis()->SetNdivisions(405);  
-  d0->GetYaxis()->SetTitle("[C_{4}/C_{2}]^{Data} - [C_{4}/C_{2}]^{Reference}");  
+  d0->GetYaxis()->SetTitle("[C_{4}/C_{2}]^{Data} #minus [C_{4}/C_{2}]^{Reference}");  
   //  d0->GetYaxis()->SetTitle("R_{42}^{data} / R_{42}^{model}");  
   d0->GetYaxis()->SetTitleOffset(1.1);  
   d0->GetYaxis()->SetTitleSize(0.068);  
