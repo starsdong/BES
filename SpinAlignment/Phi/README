@@ -19,5 +19,6 @@ B) accept_Sergei_v2pt.C:
 
    all analysis macros following the same naming scheme as in A) with _v2pt.C in the end. All output fig and root files are with _v2pt in the filenames
 
-
-         
+C) accept_Sergei_v2pt_Minv.C:
+   same as B) with a2 vs. Minv histograms added
+   a2_v2pt_Minv.C - make the plot
