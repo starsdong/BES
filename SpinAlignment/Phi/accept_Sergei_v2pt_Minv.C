@@ -35,6 +35,9 @@ void accept_Sergei_v2pt_Minv(const Int_t Nevt = 100000000)
   // fEff->SetParameters(0.659, 0.0686, 1.657);
   TGraph *gr_eff_tpc = new TGraph("eff_tpc_kaon.dat","%lg %lg");
   TGraph *gr_eff_tof = new TGraph("eff_tof_kaon.dat","%lg %lg");
+
+  TF1 *fun_eff_phi = new TF1("fun_eff_phi","1+[0]*(1+cos(2*x))",-TMath::Pi()*4.,TMath::Pi()*4.);
+  fun_eff_phi->SetParameter(0, -0.005); // x = phi(K) - Psi_2 / Fig. 26 in AN
   
   TF1 *fPhi = new TF1("fPhi","1. + 2.*[0]*cos(2.*x)", 0, TMath::Pi()*2.0);
   //  fPhi->SetParameter(0, 0.1);
@@ -323,7 +326,34 @@ void accept_Sergei_v2pt_Minv(const Int_t Nevt = 100000000)
 		hMinvCos2PhiRc3->Fill(MassMom, cos2phi);
 	      }
 	    }
-	  }	  
+
+	    // phi-Psi-dependent efficiency
+	    double dphi1 = K1mom.Phi() - Psi_RP;
+	    double dphi2 = K2mom.Phi() - Psi_RP;
+	    if(gRandom->Rndm()<fun_eff_phi->Eval(dphi1) &&
+	       gRandom->Rndm()<fun_eff_phi->Eval(dphi2)) {
+	      hPtYRc4->Fill(pT, y);
+	      hPtEtaRc4->Fill(pT, eta);
+	      if(fabs(y)<1.0) {
+		hPtCosThetaRc4->Fill(pT, costheta_rc);
+		hPtCos2PhiRc4->Fill(pT, cos2phi);
+		hPtV2Rc4->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
+		hPtCos2PhiRPRc4->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
+		hPtCosTheta2Rc4->Fill(pT, costheta_rc*costheta_rc);
+		
+		if(pT>1.2 && pT<5.4) {
+		  hYCosThetaRc4->Fill(fabs(y), costheta_rc);
+		  hYCos2PhiRc4->Fill(fabs(y), cos2phi);
+		  hYCos2PhiRPRc4->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+		  hYCosTheta2Rc4->Fill(fabs(y), costheta_rc*costheta_rc);
+		  hYV2Rc4->Fill(y, TMath::Cos(2.*(phi - Psi_RP)));
+		  hMinvCos2PhiRc4->Fill(MassMom, cos2phi);
+		}
+		
+	      }
+	      
+	    }
+	  } // end if	  
 
 	}
 

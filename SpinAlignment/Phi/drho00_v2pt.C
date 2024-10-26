@@ -3,7 +3,7 @@
 #include "/Users/starsdong/work/work/C/eff_err.C"
 
 //void rho00(const Double_t v2 = 0.1, const Double_t sigY = 5.0)
-void drho00_v2pt()
+void drho00_v2pt(const Char_t *RcName = "Rc4")
 {
   style();
     
@@ -20,7 +20,7 @@ void drho00_v2pt()
   // const Double_t pT[NPt] = {0.9, 1.5, 2.1, 2.7, 3.6, 4.8};
   // const Double_t pT1[NPt] = {0.95, 1.55, 2.15, 2.75, 3.65, 4.85};
   const Int_t NV2 = 2;
-  const Char_t *v2Name[NV2] = {"v2_0.0_Y_9.9", "v2pt"};
+  const Char_t *v2Name[NV2] = {"v2_0.0_Y_9.9", "v2pt_Minv"};
   const Char_t *v2Label[NV2] = {"v200", "v2pt"};
   const Double_t sc = -4./3.;
 
@@ -38,8 +38,11 @@ void drho00_v2pt()
     for(int i=0;i<NPt;i++) {
       c1->cd(i+1+iv2*NPt);
       fMc[iv2][i] = ((TH2D *)fin[iv2]->Get("hPtCos2PhiRP"))->ProjectionY(Form("Mc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
-      fRc[iv2][i] = ((TH2D *)fin[iv2]->Get("hPtCos2PhiRPRc3"))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
-
+      if(iv2==0) {
+	fRc[iv2][i] = ((TH2D *)fin[iv2]->Get(Form("hPtCos2PhiRPRc3")))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
+      } else {
+	fRc[iv2][i] = ((TH2D *)fin[iv2]->Get(Form("hPtCos2PhiRP%s",RcName)))->ProjectionY(Form("Rc_%d_%d",iv2, i),i_edge[i]+1,i_edge[i+1]);
+      }
 
       TH1D *h0 = new TH1D("h0","",1,-1,1);
       h0->SetMaximum(fRc[iv2][i]->GetMaximum()/0.7);
@@ -59,7 +62,7 @@ void drho00_v2pt()
   }
 
   double r_corr[NV2][NPt], re_corr[NV2][NPt];
-  TFile *fCorr = new TFile(Form("root/drho_a2_pT_v2pt.root"));
+  TFile *fCorr = new TFile(Form("root/drho_a2_pT_v2pt_%s.root",RcName));
   TGraphErrors *gr_drho[NV2];
   for(int i=0;i<NV2;i++) {
     gr_drho[i] = (TGraphErrors *)fCorr->Get(Form("drho_%d",i));
@@ -142,37 +145,14 @@ void drho00_v2pt()
 
   c2->Update();
 
-  c2->SaveAs(Form("fig/Cos2PhiRP_pT_v2pt.pdf"));
-  c2->SaveAs(Form("fig/Cos2PhiRP_pT_v2pt.png"));
+  c2->SaveAs(Form("fig/Cos2PhiRP_pT_v2pt_%s.pdf",RcName));
+  c2->SaveAs(Form("fig/Cos2PhiRP_pT_v2pt_%s.png",RcName));
 
-  TFile *fout = new TFile(Form("root/drho00_Cos2PhiRP_pT_v2pt.root"),"recreate");
+  TFile *fout = new TFile(Form("root/drho00_Cos2PhiRP_pT_v2pt_%s.root",RcName),"recreate");
   for(int i=0;i<NV2;i++) {
     gr[i]->Write();
     gr_rc[i]->Write();
     gr_corr[i]->Write();
   }
   fout->Close();
-    /*
-  TH1D *fMc = ((TH2D *)fin->Get("hPtCosTheta"))->ProjectionY("Mc",i1,i2);
-  funCosTheta->SetParameter(1, fMc->GetMaximum());
-  fMc->Fit("funCosTheta","R");
-  c1->cd(2);
-  TH1D *fRc = ((TH2D *)fin->Get("hPtCosThetaRc"))->ProjectionY("Rc",i1,i2);
-  fRc->Fit("funCosTheta","R");
-  c1->cd(3);
-  TH1D *fRc1 = ((TH2D *)fin->Get("hPtCosThetaRc1"))->ProjectionY("Rc1",i1,i2);
-  fRc1->Fit("funCosTheta","R");
-  c1->cd(4);
-  TH1D *fRc2 = ((TH2D *)fin->Get("hPtCosThetaRc2"))->ProjectionY("Rc2",i1,i2);
-  fRc2->Fit("funCosTheta","R");
-  c1->cd(5);
-  TH1D *fRc3 = ((TH2D *)fin->Get("hPtCosThetaRc3"))->ProjectionY("Rc3",i1,i2);
-  fRc3->Fit("funCosTheta","R");
-    */
-
-    /*
-  c1->Update();
-  c1->SaveAs(Form("fig/accept_Sergei_v2_%3.1f_Y_%3.1f.pdf",v2, sigY));
-  c1->SaveAs(Form("fig/accept_Sergei_v2_%3.1f_Y_%3.1f.png",v2, sigY));
-    */
 }
