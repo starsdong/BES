@@ -299,7 +299,7 @@ void Fig17_CnCm_y()
   pad_coll->Draw();
   pad_coll->cd();
 
-  drawText(0.01, 0.6, "STAR Au+Au Collisions 0-5% most central", 42, 0.355);
+  drawText(0.01, 0.6, "STAR Au+Au Collisions 0-5% most central", 42, 0.348);
   drawText(0.12, 0.18, "0.4 < p_{T} < 2.0 (GeV/c), |y| < y_{max}", 42, 0.33);
   pad_coll->Update();
 
