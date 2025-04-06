@@ -266,8 +266,9 @@ void plotDiffQM25()
   //  drawLine(x1, 0, x2, 0, 1, 9, 13);
   drawLine(x1, 0, x2, 0, 2, 9, 13);
 
-  const Int_t markerColor[n_model] = {kBlue, kBlack, kBlack, kBlack};
-  const Int_t markerStyle[n_model] = {25, 28, 26, 24};
+  //  const int plotflag[n_model] = {1, 1, 1, 0}; // UrQMD, HRG CE, Hydro EV, 70-80%
+  const Int_t markerColor[n_model] = {kBlack, kRed, kGreen+3, kBlack};
+  const Int_t markerStyle[n_model] = {20, 21, 22, 24};
   const Double_t markerSize[n_model] = {1.2, 1.4, 1.2, 1.6};
     
   for(int im=0;im<n_model;im++) {
@@ -281,7 +282,7 @@ void plotDiffQM25()
     
     drawSysBoxInRange(gr_ds[im], 0.03, 18, 1, y1, y2);
     setGraphMarker(gr_d[im], markerStyle[im], markerColor[im], markerSize[im]);
-    setGraphLine(gr_d[im], 1, markerColor[im], 1);
+    setGraphLine(gr_d[im], 1, markerColor[im], 2);
     gr_d[im]->Draw("p");
 
     if(im==3) { // replot ratio to 70-80% data with solid marker
@@ -295,7 +296,7 @@ void plotDiffQM25()
     if(im==0) {
       drawSysBoxInRange(gr_ds_fxt[im], 0.03, 18, 1, y1, y2);
       setGraphMarker(gr_d_fxt[im], markerStyle[im], markerColor[im], markerSize[im]);
-      setGraphLine(gr_d_fxt[im], 1, markerColor[im], 1);
+      setGraphLine(gr_d_fxt[im], 1, markerColor[im], 2);
       gr_d_fxt[im]->Draw("p");
 
       drawText(15, y1+(y2-y1)*0.90, "Au+Au Collisions at RHIC", 42, 0.05);
@@ -317,7 +318,7 @@ void plotDiffQM25()
   leg->SetTextSize(0.04);
   for(int im=0;im<n_model;im++) {
     if(!plotflag[im]) continue;
-    leg->AddEntry(gr_d[im], NameModel[im], "p");
+    leg->AddEntry(gr_d[im], NameModel[im], "pl");
   }
   leg->Draw();
 
