@@ -335,7 +335,7 @@ void plotDiffQM25()
   gr_l->SetMarkerColor(kRed);
   gr_l->SetMarkerStyle(20);
   gr_l->SetMarkerSize(1.2);
-  gr_l->Draw("p");
+  //  gr_l->Draw("p");
   
   
   
