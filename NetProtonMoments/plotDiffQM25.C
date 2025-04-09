@@ -479,7 +479,7 @@ void plotDiffQM25()
     
     if(im==0) {
       drawSysBoxInRange(gr_muB_ds_fxt[im], 3, 18, 0, y1, y2);
-      setGraphMarker(gr_muB_d_fxt[im], markerStyle[im], markerColor[im], 1.2);
+      setGraphMarker(gr_muB_d_fxt[im], markerStyle[im]+4, markerColor[im], 1.2);
       setGraphLine(gr_muB_d_fxt[im], 1, markerColor[im]);
       gr_muB_d_fxt[im]->Draw("p");
 
@@ -497,7 +497,7 @@ void plotDiffQM25()
   //    gr_n->Draw("c");
 
 
-  drawText(770, 1.1, "-0.5<y<0", 42, 0.03,90);
+  drawText(770, -0.3, "-0.5<y<0", 42, 0.03,90);
   
   TLegend *leg1 = new TLegend(0.74, 0.77, 0.96, 0.93);
   leg1->SetLineColor(10);
