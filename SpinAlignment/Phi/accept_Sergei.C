@@ -20,8 +20,28 @@ Double_t eff(Double_t *x, Double_t *par)
   return par[1]/(1.+TMath::Exp(y))+par[4];
 }
 
+TVector3 projPos(TVector3 p, int q = +1)
+{ 
+  const Double_t R = 2.1; // TOF radius
+  const Double_t B = 0.5; // B field
 
-void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int_t Nevt = 100000000)
+  double rP = R;
+  double zP = p.Z()/p.Perp()*R;
+  double rho = p.Perp()/0.29979/abs(q)/B;  // curvature
+  double xc = q/abs(q)*p.Y()/p.Perp()*rho;
+  double yc = q/abs(q)*(-p.X())/p.Perp()*rho;
+  double phiRot = TMath::ACos(R/2./rho);
+  TVector2 center(xc, yc);
+  double phiP = center.Phi();
+  if(xc*p.Y()-yc*p.X()>0) {
+    phiP += phiRot;
+  } else {
+    phiP -= phiRot;
+  }
+  return TVector3(R*TMath::Cos(phiP)*100, R*TMath::Sin(phiP)*100, zP*100);
+}
+
+void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 9.9, const Int_t Nevt = 100000000)
 {
 
   const Double_t MassPhi = 1.01946;
@@ -33,6 +53,12 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
   // fEff->SetParameters(0.659, 0.0686, 1.657);
   TGraph *gr_eff_tpc = new TGraph("eff_tpc_kaon.dat","%lg %lg");
   TGraph *gr_eff_tof = new TGraph("eff_tof_kaon.dat","%lg %lg");
+
+  //
+  const Double_t ZMaxTOF = 6.8;  // Z range for one module - full window
+  const Int_t NTray = 60;
+  const Int_t NCell = 6;
+  // local Y: divide phi into 60 (trays) * 6 (cells), remove matches to neighboring cells following TofMatching algorithm
   
   TF1 *fPhi = new TF1("fPhi","1. + 2.*[0]*cos(2.*x)", 0, TMath::Pi()*2.0);
   //  fPhi->SetParameter(0, 0.1);
@@ -124,7 +150,7 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
   TH2D *hYCos2PhiRPRc3 = new TH2D("hYCos2PhiRPRc3","",20,0.,1.,2000,-1.,1.);
   TH2D *hYCosTheta2Rc3 = new TH2D("hYCosTheta2Rc3","",20,0.,1.,1000,0.,1.);
 
-  //|eta|<0.9 pT>0.2, - TBD
+  //|eta|<0.9 pT>0.2, - No merging in TOF matches
   TH2D *hPtYRc4 = new TH2D("hPtYRc4","",200,0.,10.0,200,-2.,2.);
   TH2D *hPtEtaRc4 = new TH2D("hPtEtaRc4","",200,0.,10.0,200,-2.,2.);
   TH2D *hPtV2Rc4 = new TH2D("hPtV2Rc4","",200,0.,10.,200,-1.,1.);
@@ -137,6 +163,11 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
   TH2D *hYCos2PhiRc4 = new TH2D("hYCos2PhiRc4","",20,0.,1.,2000,-1.,1.);
   TH2D *hYCos2PhiRPRc4 = new TH2D("hYCos2PhiRPRc4","",20,0.,1.,2000,-1.,1.);
   TH2D *hYCosTheta2Rc4 = new TH2D("hYCosTheta2Rc4","",20,0.,1.,1000,0.,1.);
+
+  // TOF Match checks
+  TH2D *hK1TOFProj2D = new TH2D("hK1TOFProj2D","",200,-200,200,360,-TMath::Pi(),TMath::Pi());
+  TH2D *hK2TOFProj2D = new TH2D("hK2TOFProj2D","",200,-200,200,360,-TMath::Pi(),TMath::Pi());
+  TH2D *hK12TOFProjD = new TH2D("hK12TOFProjD","",200,0.,10.,1000,0.,200.);
 
   TLorentzVector Phimom(0.,0.,0.,0.);
   TLorentzVector K1mom(0.,0.,0.,0.);   // Kaon momentum in the lab frame
@@ -294,8 +325,51 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
 		hYCos2PhiRc3->Fill(fabs(y), cos2phi);
 		hYCos2PhiRPRc3->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
 		hYCosTheta2Rc3->Fill(fabs(y), costheta_rc*costheta_rc);
+	      }	      
+	    }
+
+	    // Check merging in TOF cells - added 05/2025
+	    TVector3 K1P = projPos(K1mom.Vect(), +1);
+	    TVector3 K2P = projPos(K2mom.Vect(), -1);
+	    hK1TOFProj2D->Fill(K1P.Z(), K1P.Phi());
+	    hK2TOFProj2D->Fill(K2P.Z(), K2P.Phi());
+	    hK12TOFProjD->Fill(pT, (K1P-K2P).Mag());
+	    int iz1 = int(fabs(K1P.Z())/ZMaxTOF) + 1;
+	    if(K1P.Z()<0) iz1 = -iz1;
+	    int iz2 = int(fabs(K2P.Z())/ZMaxTOF) + 2;
+	    if(K1P.Z()<0) iz2 = -iz2;
+
+	    int itray1 = int((K1P.Phi() + TMath::Pi())/(TMath::Pi()*2/NTray));
+	    int itray2 = int((K2P.Phi() + TMath::Pi())/(TMath::Pi()*2/NTray));
+	    bool TOFMerge = false;  // two track projections merge in TOF
+	    if(iz1==iz2 && itray1==itray2) {
+	      int icell1 = int((K1P.Phi() + TMath::Pi())/(TMath::Pi()*2/NTray/NCell));
+	      int icell2 = int((K2P.Phi() + TMath::Pi())/(TMath::Pi()*2/NTray/NCell));
+	      if(abs(icell1-icell2)<=1) { // including matching in neibouring cells
+		TOFMerge = true;
+		std::cout << " Found one merging pair!" << std::endl;
 	      }
 	    }
+	    if(!TOFMerge) {
+	      hPtYRc4->Fill(pT, y);
+	      hPtEtaRc4->Fill(pT, eta);
+	      if(fabs(y)<1.0) {
+		hPtCosThetaRc4->Fill(pT, costheta_rc);
+		hPtCos2PhiRc4->Fill(pT, cos2phi);
+		hPtV2Rc4->Fill(pT, TMath::Cos(2.*(PhimomRc.Phi() - Psi_RP)));
+		hPtCos2PhiRPRc4->Fill(pT, TMath::Cos(2.*(phi_star - Psi_RP)));
+		hPtCosTheta2Rc4->Fill(pT, costheta_rc*costheta_rc);
+		
+		if(pT>1.2 && pT<5.4) {
+		  hYCosThetaRc4->Fill(fabs(y), costheta_rc);
+		  hYCos2PhiRc4->Fill(fabs(y), cos2phi);
+		  hYCos2PhiRPRc4->Fill(fabs(y), TMath::Cos(2.*(phi_star - Psi_RP)));
+		  hYCosTheta2Rc4->Fill(fabs(y), costheta_rc*costheta_rc);
+		}	      
+	      }
+	      
+	    }
+	    
 	  }	  
 
 	}
@@ -382,6 +456,10 @@ void accept_Sergei(const Double_t v2 = 0.1, const Double_t sigY = 5.0, const Int
   hPtPhiK1->Write();
   hPtPhiK2->Write();
 
+  hK1TOFProj2D->Write();
+  hK2TOFProj2D->Write();
+  hK12TOFProjD->Write();
+  
   fout->Close();
 
 }
