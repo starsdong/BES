@@ -37,6 +37,7 @@ void plotDiff_202508()
   const int ntot_datapts=11;
   const int n_model = 4;
   const int plotflag[n_model] = {1, 1, 1, 0}; // UrQMD, HRG CE, Hydro EV, 70-80%
+  const int plotflag_fxt[n_model] = {1, 0, 0, 0}; // UrQMD, HRG CE, Hydro EV, 70-80%
 
   ////data 0-5%
   double C42_ener[ntot_datapts]={7.7,9.2,11.5,14.6,17.3,19.6,27,39,54.4,62.4,200};
@@ -89,7 +90,8 @@ void plotDiff_202508()
   double C42_stat_model[n_model][ntot_datapts];
   double C42_sys_model[n_model][ntot_datapts];
   double C42_err_model[n_model][ntot_datapts];
-  const Char_t *NameModel[n_model] = {"UrQMD (0-5%)", "HRG CE","Hydro EV","Data (70-80%)"};
+  //  const Char_t *NameModel[n_model] = {"UrQMD (0-5%)", "HRG CE","Hydro EV","Data (70-80%)"};
+  const Char_t *NameModel[n_model] = {"UrQMD", "HRG CE","Hydro EV","Data (70-80%)"};
   for(int i=0;i<ntot_datapts;i++) {
     sNN[i] = C42_ener[i];
     muB[i] = fun_muB->Eval(sNN[i]);
@@ -161,7 +163,7 @@ void plotDiff_202508()
 
   const int ntot_fxt_proj = 2;
   double C42_ener_fxt_proj[ntot_fxt] = {4.2, 4.4};
-  double C42_fxt_proj[ntot_fxt] = {0.65, 0.9810};  // Yu's data - 202508
+  double C42_fxt_proj[ntot_fxt] = {0.75, 0.9810};  // Yu's data - 202508
   double C42_stat_fxt_proj[ntot_fxt] = {0.0308, 0.0308};
   double C42_sys_fxt_proj[ntot_fxt] = {0.0834, 0.0834};
 
@@ -314,7 +316,7 @@ void plotDiff_202508()
   d0->GetYaxis()->SetNdivisions(405);  
   d0->GetYaxis()->SetTitle("[C_{4}/C_{2}]^{Data} #minus [C_{4}/C_{2}]^{Reference}");  
   //  d0->GetYaxis()->SetTitle("R_{42}^{data} / R_{42}^{model}");  
-  d0->GetYaxis()->SetTitleOffset(1.1);  
+  d0->GetYaxis()->SetTitleOffset(1.2);  
   d0->GetYaxis()->SetTitleSize(0.068);  
   d0->GetYaxis()->SetLabelOffset(0.012);
   d0->GetYaxis()->SetLabelSize(0.05);
@@ -362,7 +364,7 @@ void plotDiff_202508()
   }
 
   for(int im=0;im<n_model;im++) {
-    if(!plotflag[im]) continue;    
+    if(!plotflag_fxt[im]) continue;    
     gr_d[im]->Draw("p");
     gr_d_fxt[im]->Draw("p");
   }
@@ -435,6 +437,7 @@ void plotDiff_202508()
   //  drawLine(x1, 0, x2, 0, 1, 9, 13);
   drawLine(x1, 0, x2, 0, 2, 9, 13);
 
+
   TF1 *fun = new TF1("fun",xgx,x1,x2,5);
   //  fun->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   fun->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
@@ -461,22 +464,31 @@ void plotDiff_202508()
   fun_n->SetLineStyle(9);
   //  fun_n->Draw("same");
 
+  TGraph *gr_fun_input = new TGraph("R42_curve.txt","%lg %lg");
+  TSpline3 *gr_fun = new TSpline3("sp3",gr_fun_input);
+
   const Int_t np = 100;
+  const Double_t e_s = 9.0;
   double ener_p[np], muB_p[np], y_p[np], y_p1[np];
   double ener_n[np], muB_n[np], y_n[np];
   for(int i=0;i<np;i++) {
     //    ener_p[i] = (11.5 - 2.0)/np*(i+0.1) + 2.0;
-    ener_p[i] = (11.5 - 2.0)/np*(i+0.1) + 2.0;
+    ener_p[i] = (e_s - 2.0)/np*(i+0.1) + 2.0;
     muB_p[i] = fun_muB->Eval(ener_p[i]);
-    y_p[i] = fun_p->Eval(ener_p[i]);
-    y_p1[i] = fun_p->Eval(ener_p[i]) * 0.5;
+    // y_p[i] = fun_p->Eval(ener_p[i]);
+    // y_p1[i] = fun_p->Eval(ener_p[i]) * 0.5;
+    y_p[i] = gr_fun->Eval(muB_p[i]);
+    y_p1[i] = gr_fun->Eval(muB_p[i]) * 0.5;
     
     //    ener_n[i] = (200 - 11.5)/np*(i+0.1) + 11.5;
-    ener_n[i] = (200 - 11.5)/np*(i+0.1) + 11.5;
+    ener_n[i] = (200 - e_s)/np*(i+0.1) + e_s;
     muB_n[i] = fun_muB->Eval(ener_n[i]);
-    y_n[i] = fun_p->Eval(ener_n[i]);
+    //    y_n[i] = fun_p->Eval(ener_n[i]);
+    y_n[i] = gr_fun->Eval(muB_n[i]);
   }
 
+  
+  
   TGraph *gr_p = new TGraph(np, muB_p, y_p);
   gr_p->SetLineColor(kBlue);
   gr_p->SetLineWidth(6);
@@ -562,7 +574,7 @@ void plotDiff_202508()
 
   drawText(770, -0.3, "-0.5<y<0", 42, 0.03,90);
   
-  TLegend *leg1 = new TLegend(0.74, 0.77, 0.96, 0.93);
+  TLegend *leg1 = new TLegend(0.26, 0.72, 0.46, 0.87);
   leg1->SetLineColor(10);
   leg1->SetTextSize(0.035);
   for(int im=n_model-1;im>=0;im--) {
@@ -570,6 +582,18 @@ void plotDiff_202508()
     leg1->AddEntry(gr_muB_d[im], NameModel[im], "pl");
   }
   leg1->Draw();
+  drawText(80, 0.52, "Refs.", 42, 0.04,90);
+  drawText(40, 0.78, "STAR Data (0-5%)", 52, 0.04);
+
+  TLegend *leg2 = new TLegend(0.7, 0.82, 0.96, 0.92);
+  leg2->SetLineColor(10);
+  leg2->SetTextSize(0.035);
+  for(int im=n_model-1;im>=0;im--) {
+    if(!plotflag_fxt[im]) continue;
+    leg2->AddEntry(gr_muB_d_fxt[im], Form("%s FXT",NameModel[im]), "pl");
+    leg2->AddEntry(gr_muB_d_fxt_proj[im],"Proj. w/ 2B evts","pl");
+  }
+  leg2->Draw();
 
   drawArrow(fun_muB->Eval(27.0), y1+0.05, fun_muB->Eval(7.7), y1+0.05, 0.03, 30, 2, 1, 1, "<|>");
   drawText(fun_muB->Eval(17), y1+0.08, "BES-II COL", 52, 0.03);
