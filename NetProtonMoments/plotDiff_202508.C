@@ -590,7 +590,7 @@ void plotDiff_202508()
   leg2->SetTextSize(0.035);
   for(int im=n_model-1;im>=0;im--) {
     if(!plotflag_fxt[im]) continue;
-    leg2->AddEntry(gr_muB_d_fxt[im], Form("%s FXT",NameModel[im]), "pl");
+    leg2->AddEntry(gr_muB_d_fxt[im], Form("FXT w/ %s",NameModel[im]), "pl");
     leg2->AddEntry(gr_muB_d_fxt_proj[im],"Proj. w/ 2B evts","pl");
   }
   leg2->Draw();
