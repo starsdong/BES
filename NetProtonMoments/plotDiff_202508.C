@@ -158,7 +158,30 @@ void plotDiff_202508()
 						 {0., 0., 0., 0., 0.},
 						 {0., 0., 0., 0., 0.}
   };
- 
+
+  const int ntot_fxt_proj = 2;
+  double C42_ener_fxt_proj[ntot_fxt] = {4.2, 4.4};
+  double C42_fxt_proj[ntot_fxt] = {0.65, 0.9810};  // Yu's data - 202508
+  double C42_stat_fxt_proj[ntot_fxt] = {0.0308, 0.0308};
+  double C42_sys_fxt_proj[ntot_fxt] = {0.0834, 0.0834};
+
+  double C42_model_fxt_proj[n_model][ntot_fxt] = {{0.48, 0.5251},
+						  {0., 0.},
+						  {0., 0.},
+						  {0., 0.}
+  };
+  double C42_err_model_fxt_proj[n_model][ntot_fxt] = {{0.0, 0.0},
+						      {0., 0.},
+						      {0., 0.},
+						      {0., 0.}
+  };
+  
+  double muB_fxt_proj[ntot_fxt];
+  for(int i=0;i<ntot_fxt_proj;i++) {
+    muB_fxt_proj[i] = fun_muB->Eval(C42_ener_fxt_proj[i]);
+    cout << " muB fxt = " << muB_fxt_proj[i] << endl;
+  }
+  
   ///////////////////////////////////
   //////////===== chi2 test /////////
   ///////////////////////////////////
@@ -243,6 +266,30 @@ void plotDiff_202508()
   for(int im=0;im<n_model;im++) {
     gr_dsm[im] = new TGraphErrors(ntot_fxt+ntot_datapts, ener[im], diff_zero[im], 0, diffesm[im]);
     gr_dsm[im]->Print();
+  }
+  
+  // projections
+  double xe_fxt_proj[n_model][ntot_fxt], xmuB_fxt_proj[n_model][ntot_fxt], diff_fxt_proj[n_model][ntot_fxt], diffe_fxt_proj[n_model][ntot_fxt], diffes_fxt_proj[n_model][ntot_fxt];
+  for(int im=0;im<n_model;im++) {
+    for(int i=0;i<ntot_fxt_proj;i++) {
+      if(fabs(C42_model_fxt_proj[im][i])<1.e-4) continue;
+      xe_fxt_proj[im][i] = C42_ener_fxt_proj[i];
+      xmuB_fxt_proj[im][i] = muB_fxt_proj[i];
+      diff_fxt_proj[im][i] = C42_fxt_proj[i] - C42_model_fxt_proj[im][i];
+      diffe_fxt_proj[im][i] = sqrt(pow(C42_stat_fxt_proj[i], 2.0) + pow(C42_err_model_fxt_proj[im][i], 2.0));
+      diffes_fxt_proj[im][i] = C42_sys_fxt_proj[i];
+    }
+  }
+  TGraphErrors *gr_d_fxt_proj[n_model], *gr_ds_fxt_proj[n_model];
+  TGraphErrors *gr_muB_d_fxt_proj[n_model], *gr_muB_ds_fxt_proj[n_model];
+  for(int im=0;im<n_model;im++) {
+    gr_d_fxt_proj[im] = new TGraphErrors(ntot_fxt_proj, xe_fxt_proj[im], diff_fxt_proj[im], 0, diffe_fxt_proj[im]);
+    gr_d_fxt_proj[im]->Print();
+    gr_ds_fxt_proj[im] = new TGraphErrors(ntot_fxt_proj, xe_fxt_proj[im], diff_fxt_proj[im], 0, diffes_fxt_proj[im]);
+
+    gr_muB_d_fxt_proj[im] = new TGraphErrors(ntot_fxt_proj, xmuB_fxt_proj[im], diff_fxt_proj[im], 0, diffe_fxt_proj[im]);
+    gr_muB_d_fxt_proj[im]->Print();
+    gr_muB_ds_fxt_proj[im] = new TGraphErrors(ntot_fxt_proj, xmuB_fxt_proj[im], diff_fxt_proj[im], 0, diffes_fxt_proj[im]);
   }
   
   TCanvas *c1 = new TCanvas("c1","",1000,800);
@@ -389,7 +436,7 @@ void plotDiff_202508()
   drawLine(x1, 0, x2, 0, 2, 9, 13);
 
   TF1 *fun = new TF1("fun",xgx,x1,x2,5);
-  //  fun->SetParameters(4.5, 0.2, 11.5, 0.2, 0.18);
+  //  fun->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   fun->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   // fun->SetLineWidth(4);
   // fun->SetLineStyle(9);
@@ -397,7 +444,7 @@ void plotDiff_202508()
   //  fun->Draw("same");
 
   TF1 *fun_p =  new TF1("fun_p",xgx,x1,fun->GetParameter(2),5);
-  //  fun_p->SetParameters(4.5, 0.2, 11.5, 0.2, 0.18);
+  //  fun_p->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   fun_p->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   //  fun_p->SetRange(x1, fun->GetParameter(2));
   fun_p->SetLineColor(kBlue);
@@ -406,7 +453,7 @@ void plotDiff_202508()
   //  fun_p->Draw("same");
 
   TF1 *fun_n =  new TF1("fun_n",xgx,fun->GetParameter(2), x2,5);
-  //  fun_n->SetParameters(4.5, 0.2, 11.5, 0.2, 0.18);
+  //  fun_n->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   fun_n->SetParameters(3.0, 0.2, 11.5, 0.25, 0.18);
   //  fun_n->SetRange(fun->GetParameter(2), x2);
   fun_n->SetLineColor(kRed);
@@ -495,6 +542,12 @@ void plotDiff_202508()
 
       drawText(50, 2.0, "Au+Au 0-5%", 42, 0.05);
       drawText(40, 1.85, "0.4<p_{T}<2.0 GeV/c, |y|<0.5", 42, 0.03);
+
+      drawSysBoxInRange(gr_muB_ds_fxt_proj[im], 3, 18, 0, y1, y2);
+      setGraphMarker(gr_muB_d_fxt_proj[im], 20, kGreen+3, 1.2);
+      setGraphLine(gr_muB_d_fxt_proj[im], 1, kGreen+3);
+      gr_muB_d_fxt_proj[im]->Draw("p");
+      
     }
     
   }
